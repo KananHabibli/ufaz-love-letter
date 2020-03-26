@@ -28,13 +28,13 @@ mongoose.set('useCreateIndex', true);
 const session = require('express-session')
 
 // Session Middleware //secure: true
-app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  secret: 'loveLetter',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { }
-}))
+// app.set('trust proxy', 1) // trust first proxy
+// app.use(session({
+//   secret: 'loveLetter',
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: { }
+// }))
 
 // Built-in node package for working with file and directory paths
 const path = require('path')
