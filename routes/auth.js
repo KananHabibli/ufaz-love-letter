@@ -14,6 +14,7 @@ router.get('/auth/google/callback',
 router.get('/auth/verify', (req, res) => {
   if(req.user){
     console.log(req.user)
+    res.json()
   }else{
     console.log('not auth')
   }
@@ -48,7 +49,6 @@ router.post('/auth/signup', (req, res, next) => {
     res.send("passwords dont match");
     return next(err);
   }
-  // console.log(req.body)
   if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
     const newUser = new User({
       username: req.body.username,
@@ -59,16 +59,16 @@ router.post('/auth/signup', (req, res, next) => {
       gamesWon: 0,
       gamesLost: 0
     })
-    // console.log(newUser)
     newUser.save().then(user => {
       console.log("User saved")
-      res.redirect('/profile')
+      res.json(user)
     }).catch(err => {
       console.log(err)
-      res.status(400).send("unable to save to database");
+      res.status(400).json({message: `unable to save to database: ${err}`});
     });
   }  else {
     console.log("Problem occured!!")
+    res.json({message: "Problem occured!"})
   }
 })
 
