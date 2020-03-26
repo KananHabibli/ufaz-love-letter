@@ -78,7 +78,7 @@ app.use((req, res, next) => {
 })
 
 const hostname = '127.0.0.1';
-const port = 3001 || process.env.PORT;
+const port = process.env.PORT || 3001;
 
 // Load routes
 const auth = require('./routes/auth')
