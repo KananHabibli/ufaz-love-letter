@@ -1,6 +1,7 @@
 // Express Server
 const express = require('express')
 const app = express()
+var cors = require('cors')
 
 // socket.io
 const socketio = require('socket.io')
@@ -79,6 +80,8 @@ app.use((req, res, next) => {
 
 const hostname = '127.0.0.1';
 const port = process.env.PORT || 3001;
+
+app.use(cors()) 
 
 // Load routes
 const auth = require('./routes/auth')
