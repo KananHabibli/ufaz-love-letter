@@ -77,6 +77,18 @@ router.get('/auth/login', (req, res) => {
   res.render('index/login')
 })
 
+router.get('/auth/users', (req, res) => {
+  User.find({}, function(err, users) {
+    var userMap = {};
+
+    users.forEach(function(user) {
+      userMap[user._id] = user;
+    });
+
+    res.json(userMap);  
+  });
+})
+
 router.post('/auth/login', (req, res) => {
 
 })
