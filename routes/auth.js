@@ -49,7 +49,7 @@ router.post('/auth/signup', (req, res, next) => {
     res.send("passwords dont match");
     return next(err);
   }
-  if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
+  // if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
     const newUser = new User({
       username: req.body.username,
       email: req.body.email,
@@ -66,10 +66,10 @@ router.post('/auth/signup', (req, res, next) => {
       console.log(err)
       res.status(400).json({message: `unable to save to database: ${err}`});
     });
-  }  else {
-    console.log("Problem occured!!")
-    res.json({message: "Problem occured!"})
-  }
+  // }  else {
+  //   console.log("Problem occured!!")
+  //   res.json({message: "Problem occured!"})
+  // }
 })
 
 
