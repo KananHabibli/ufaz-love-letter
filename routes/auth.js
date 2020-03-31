@@ -63,7 +63,7 @@ router.post('/auth/signup', (req, res, next) => {
       console.log("User saved")
       res.json(user)
     }).catch(err => {
-      res.json({message: `unable to save to database: ${err}`});
+      res.status(400).json({message: `This user already exists.`});
     });
   }  else {
     res.json({message: "Problem occured!"})
