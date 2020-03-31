@@ -63,7 +63,7 @@ router.post('/auth/signup', (req, res, next) => {
       console.log("User saved")
       res.json(user)
     }).catch(err => {
-      res.status(400).json({message: `unable to save to database: ${err}`});
+      res.json({message: `unable to save to database: ${err}`});
     });
   }  else {
     res.json({message: "Problem occured!"})
