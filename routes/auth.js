@@ -49,7 +49,7 @@ router.post('/auth/signup', (req, res, next) => {
     res.send("passwords dont match");
     return next(err);
   }
-  // if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
+  if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
     const newUser = new User({
       username: req.body.username,
       email: req.body.email,
@@ -63,18 +63,29 @@ router.post('/auth/signup', (req, res, next) => {
       console.log("User saved")
       res.json(user)
     }).catch(err => {
-      console.log(err)
       res.status(400).json({message: `unable to save to database: ${err}`});
     });
-  // }  else {
-  //   console.log("Problem occured!!")
-  //   res.json({message: "Problem occured!"})
-  // }
+  }  else {
+    res.json({message: "Problem occured!"})
+  }
 })
 
 
 router.get('/auth/login', (req, res) => {
   res.render('index/login')
+})
+
+router.post('/auth/login', (req, res) => {
+  if(req.body.email && req.body.password){
+    console.log(req.body)
+    User.find({email: req.body.email}).then(user => {
+      res.json(user)
+    }).catch(err => {
+      res.json({message: `Error: ${err}`})
+    })
+  } else {
+    res.json({message: "Problem occured!"})
+  }
 })
 
 router.get('/auth/users', (req, res) => {
