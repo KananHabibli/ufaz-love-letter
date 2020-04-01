@@ -47,7 +47,7 @@ router.post('/auth/signup', (req, res, next) => {
   if (req.body.password !== req.body.passwordConf) {
     // var err = new Error('Passwords do not match.');
     // err.status = 400;
-    res.json({message: "passwords dont match"});
+    return res.json({message: "Passwords dont match"});
     // return next(err);
   }
   if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
@@ -64,7 +64,7 @@ router.post('/auth/signup', (req, res, next) => {
       console.log("User saved")
       res.json(user)
     }).catch(err => {
-      res.status(400).json({message: `This user already exists.`});
+      res.json({message: `This user already exists.`});
     });
   }  else {
     res.json({message: "Problem occured!"})
