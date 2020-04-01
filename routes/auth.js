@@ -44,10 +44,10 @@ router.get('/auth/signup', (req, res) => {
 
 router.post('/auth/signup', (req, res, next) => {
   if (req.body.password !== req.body.passwordConf) {
-    var err = new Error('Passwords do not match.');
-    err.status = 400;
-    res.send("passwords dont match");
-    return next(err);
+    // var err = new Error('Passwords do not match.');
+    // err.status = 400;
+    res.json({message: "passwords dont match"});
+    // return next(err);
   }
   if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
     const newUser = new User({
@@ -77,11 +77,14 @@ router.get('/auth/login', (req, res) => {
 
 router.post('/auth/login', (req, res) => {
   if(req.body.email && req.body.password){
-    console.log(req.body)
     User.find({email: req.body.email}).then(user => {
-      res.json(user)
+      if(Object.keys(user).length != 0){
+        res.json(user)
+      } else {
+        res.json({message: "This user doesn't exist"})  
+      }
     }).catch(err => {
-      res.json({message: `Error: ${err}`})
+      res.json({message: "Unable to identify the user in database"})
     })
   } else {
     res.json({message: "Problem occured!"})
@@ -93,15 +96,11 @@ router.get('/auth/users', (req, res) => {
     var userMap = {};
 
     users.forEach(function(user) {
-      userMap[user._id] = user;
+      userMap[user.username] = user;
     });
 
     res.json(userMap);  
   });
-})
-
-router.post('/auth/login', (req, res) => {
-
 })
 
 
