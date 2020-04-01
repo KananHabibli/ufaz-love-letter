@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const passport = require('passport')
+const bcrypt = require('bcrypt')
 
 const User = require('../models/User')
 
@@ -77,14 +78,22 @@ router.get('/auth/login', (req, res) => {
 
 router.post('/auth/login', (req, res) => {
   if(req.body.email && req.body.password){
-    User.find({email: req.body.email}).then(user => {
-      if(Object.keys(user).length != 0){
-        res.json(user)
-      } else {
-        res.json({message: "This user doesn't exist"})  
+    User.findOne({email: req.body.email}).exec((err, user) => {
+      if(err){
+        return res.json({message: `An error has occured`})
+      } else if(!user){
+        return res.json({message: "This user doesn't exist"})
       }
-    }).catch(err => {
-      res.json({message: "Unable to identify the user in database"})
+      console.log('Breakpoint 1')
+      bcrypt.compare(req.body.password, user.password, (err, result) => {
+        if(result === true){
+          console.log('true')
+          res.json(user)
+        } else {
+          console.log('false')
+          res.json({message: "Password isn't correct"})
+        }
+      })
     })
   } else {
     res.json({message: "Problem occured!"})
