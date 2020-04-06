@@ -4,12 +4,13 @@ const passport = require('passport')
 const bcrypt = require('bcrypt')
 
 const User = require('../models/User')
+const sendEmail = require('../mails/mail')
 
 router.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}))
 
 router.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/' }),(req, res) => {
-    res.redirect('/profile')
+    res.redirect('/')
 })
 
 router.get('/auth/verify', (req, res) => {
@@ -62,15 +63,15 @@ router.post('/auth/signup', (req, res, next) => {
     })
     newUser.save().then(user => {
       console.log("User saved")
+      sendEmail(user)
       res.json(user)
     }).catch(err => {
-      res.json({message: `This user already exists.`});
+      res.json({message: "This user already exists."});
     });
   }  else {
     res.json({message: "Problem occured!"})
   }
 })
-
 
 router.get('/auth/login', (req, res) => {
   res.render('index/login')
@@ -114,21 +115,21 @@ router.get('/auth/users', (req, res) => {
 
 
 // GET route after registering
-router.get('/profile', function (req, res, next) {
-  User.findById(req.session.userId)
-    .exec(function (error, user) {
-      if (error) {
-        return next(error);
-      } else {
-        if (user === null) {
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
-          return next(err);
-        } else {
-          return res.send('<h1>Name: </h1>' + user.username + '<h2>Mail: </h2>' + user.email + '<br><a type="button" href="/logout">Logout</a>')
-        }
-      }
-    });
-});
+// router.get('/profile', function (req, res, next) {
+//   User.findById(req.session.userId)
+//     .exec(function (error, user) {
+//       if (error) {
+//         return next(error);
+//       } else {
+//         if (user === null) {
+//           var err = new Error('Not authorized! Go back!');
+//           err.status = 400;
+//           return next(err);
+//         } else {
+//           return res.send('<h1>Name: </h1>' + user.username + '<h2>Mail: </h2>' + user.email + '<br><a type="button" href="/logout">Logout</a>')
+//         }
+//       }
+//     });
+// });
 
 module.exports = router

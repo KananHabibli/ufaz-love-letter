@@ -85,9 +85,11 @@ app.use(cors())
 
 // Load routes
 const auth = require('./routes/auth')
+const db = require('./routes/db')
 
 // Use routes
 app.use(auth)
+app.use(db)
 
 app.get('/', (req, res) => {
   res.render('index/home')

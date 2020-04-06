@@ -1,6 +1,7 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const keys = require('./keys')
 const User = require('../models/User_google')
+const sendEmail = require('../mails/mail')
 
 module.exports = function(passport){
     passport.use(
@@ -30,7 +31,10 @@ module.exports = function(passport){
                 } else {
                     // Create user
                     new User(newUser).save()
-                        .then(user => done(null,user))
+                        .then(user =>{
+                            sendEmail(user)
+                            done(null,user)
+                        })
                 }
             })
         })
