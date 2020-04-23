@@ -86,20 +86,26 @@ app.use(cors())
 // Load routes
 const auth = require('./routes/auth')
 const db = require('./routes/db')
+const game = require('./routes/game')
 
 // Use routes
 app.use(auth)
 app.use(db)
+app.use(game)
+
+// const socket = io.connect('http://localhost:3001');
+// console.log(io)
+
 
 app.get('/', (req, res) => {
   res.render('index/home')
 })
 
 io.on('connection', function(socket){
-    console.log('a user connected', socket.id);
-    socket.on('disconnect', function() {
-      console.log('user disconnected');
-    });
+  console.log('a user connected', socket.id);
+  socket.on('disconnect', function() {
+    console.log('user disconnected');
+  });
 });
 
 server.listen(port, () => {

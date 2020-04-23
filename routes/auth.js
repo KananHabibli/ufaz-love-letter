@@ -21,6 +21,8 @@ router.get('/auth/verify', (req, res) => {
     console.log('not auth')
   }
 })
+
+
 router.get('/auth/logout', (req, res) => {
   req.logout()
   res.redirect('/')
@@ -46,10 +48,7 @@ router.get('/auth/signup', (req, res) => {
 
 router.post('/auth/signup', (req, res, next) => {
   if (req.body.password !== req.body.passwordConf) {
-    // var err = new Error('Passwords do not match.');
-    // err.status = 400;
-    return res.json({message: "Passwords dont match"});
-    // return next(err);
+    return res.json({message: "Passwords don't match"});
   }
   if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
     const newUser = new User({
@@ -87,11 +86,9 @@ router.post('/auth/login', (req, res) => {
       }
       console.log('Breakpoint 1')
       bcrypt.compare(req.body.password, user.password, (err, result) => {
-        if(result === true){
-          console.log('true')
+        if(result){
           res.json(user)
         } else {
-          console.log('false')
           res.json({message: "Password isn't correct"})
         }
       })
@@ -101,35 +98,9 @@ router.post('/auth/login', (req, res) => {
   }
 })
 
-router.get('/auth/users', (req, res) => {
-  User.find({}, function(err, users) {
-    var userMap = {};
+router.post('/lobby?round=1', (req, res) => {
 
-    users.forEach(function(user) {
-      userMap[user.username] = user;
-    });
-
-    res.json(userMap);  
-  });
 })
 
-
-// GET route after registering
-// router.get('/profile', function (req, res, next) {
-//   User.findById(req.session.userId)
-//     .exec(function (error, user) {
-//       if (error) {
-//         return next(error);
-//       } else {
-//         if (user === null) {
-//           var err = new Error('Not authorized! Go back!');
-//           err.status = 400;
-//           return next(err);
-//         } else {
-//           return res.send('<h1>Name: </h1>' + user.username + '<h2>Mail: </h2>' + user.email + '<br><a type="button" href="/logout">Logout</a>')
-//         }
-//       }
-//     });
-// });
 
 module.exports = router
