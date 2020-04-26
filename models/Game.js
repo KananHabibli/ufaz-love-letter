@@ -16,18 +16,10 @@ const GameSchema = new mongoose.Schema({
         }
     },
     players: [Object],
-    currentCards: [Object],
+    currentCards: [[Object]],
     discardedCards: [Object],
     theWholeDeck: [Object],
-    roundsWon: [
-        {
-            type: Number,
-            required: true
-        }
-    ],
-    goal: {
-        type: Number,
-    }
+    goal: Number
 }, {
     timestamps: true
 })

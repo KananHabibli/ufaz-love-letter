@@ -8,13 +8,13 @@ const sendEmail = (user) => {
     const transporter = nodeMailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'habiblikanan@gmail.com',
-          pass: 'iostream14'
+          user: 'loveletterufaz@gmail.com',
+          pass: 'love-letter-ufaz'
         }
     });
 
     const mailOptions = {
-        from: 'habiblikanan@gmail.com',
+        from: 'loveletterufaz@gmail.com',
         to: user.email,
         subject: 'Love Letter Registration',
         text: `Welcome to Love Letter, ${user.username}!`

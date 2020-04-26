@@ -28,4 +28,16 @@ router.get('/db/cards', (req, res) => {
     });
 })
 
+router.get('/db/session', (req, res) => {
+  Card.find({}, function(err, cards) {
+    var cardMap = {};
+
+    cards.forEach(function(card) {
+      cardMap[card.card] = card;
+    });
+
+    res.json(cardMap);  
+  });
+})
+
 module.exports = router

@@ -84,9 +84,12 @@ router.post('/auth/login', (req, res) => {
       } else if(!user){
         return res.json({message: "This user doesn't exist"})
       }
-      console.log('Breakpoint 1')
       bcrypt.compare(req.body.password, user.password, (err, result) => {
         if(result){
+          req.session.user = user.username
+          req.session.email = user.email
+          console.log(req.session)
+          console.log(user)
           res.json(user)
         } else {
           res.json({message: "Password isn't correct"})
@@ -98,9 +101,6 @@ router.post('/auth/login', (req, res) => {
   }
 })
 
-router.post('/lobby?round=1', (req, res) => {
-
-})
 
 
 module.exports = router

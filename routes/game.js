@@ -26,6 +26,7 @@ router.post('/createLobby', (req, res) => {
 
     Cards.find({}).then(deck => {
         let cards = []
+        let current = []
         let discardedCards= []
         let goal
         if(number == 4){
@@ -43,17 +44,18 @@ router.post('/createLobby', (req, res) => {
         while(cards.length != number){
             rand = randomNumber(deck.length)
             console.log(rand)
-            cards.push(deck[rand])
+            current.push(deck[rand])
+            cards.push(current)
             deck.splice(rand, 1);
+            current = []
         }
         let newGame = new Game({
             lobbyName: req.body.lobbyName,
             lobbyPassword: req.body.lobbyPassword,
-            players:[],
+            players:[{...req.session, turn: true, outOfRound: false, roundsWon: 0}],
             currentCards: cards,
             discardedCards,
             theWholeDeck: deck,
-            roundsWon: [0,0,0,0],
             goal
         })
 
