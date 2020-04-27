@@ -9,15 +9,17 @@ const server = require('http').createServer(app)
 const io = socketio(server)
 
 const { randomNumber } = require('../utils/utils')
+const { ensureAuth } = require('../helpers/auth')
+
 
 const Cards = require('../models/Cards')
 const Game = require('../models/Game')
 
 router.get('/createLobby', (req, res) => {
-    res.render('index/form')
+    res.render('index/createLobby')
 })
 
-router.post('/createLobby', (req, res) => {
+router.post('/createLobby', ensureAuth, (req, res) => {
     if(!req.body.lobbyName || !req.body.number){
         res.json({message: "You haven't entered lobby name"})
     }
@@ -63,7 +65,7 @@ router.post('/createLobby', (req, res) => {
             res.json(game)
         }).catch(e => {
             res.json({
-                message: "There has been an error while creating the game lobby!!"
+                message: "There has been an error while creating the game lobby!!" + e
             })
         })
     }).catch(e => {
@@ -71,6 +73,31 @@ router.post('/createLobby', (req, res) => {
             message: "The deck can't be fetched!!" + e
         })
     })
+})
+
+router.get('/joinLobby', (req, res) => {
+    res.render('index/joinLobby')
+})
+
+router.post('/joinLobby', async (req, res) => {
+    if(req.body.lobbyName){
+        const lobbyName = req.body.lobbyName
+        const lobbyPassword = req.body.lobbyPassword
+        let game = await Game.findOne({lobbyPassword, lobbyName})
+        game.players.push({...req.session, turn: true, outOfRound: false, roundsWon: 0})
+        game.save().then(game => {
+            res.json({game})
+        }).catch(e => {
+            res.json({
+                message: "There has been a problem while joining the lobby"
+            })
+        })
+        res.json(game)
+    } else {
+        res.json({
+            message: "Please enter a lobby name"
+        })
+    }
 })
 
 

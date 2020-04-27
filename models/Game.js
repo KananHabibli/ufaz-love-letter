@@ -8,12 +8,7 @@ const GameSchema = new mongoose.Schema({
     lobbyPassword: {
         type: String,
         trim: true,
-        minLength: 4,
-        validate(value){
-            if ( validator.contains('password',value)){
-                throw new Error('Password can not contain the word password')
-            }
-        }
+        minLength: 4
     },
     players: [Object],
     currentCards: [[Object]],

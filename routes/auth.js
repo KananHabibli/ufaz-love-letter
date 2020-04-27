@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt')
 const User = require('../models/User')
 const sendEmail = require('../mails/mail')
 
+
 router.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}))
 
 router.get('/auth/google/callback', 
@@ -96,9 +97,5 @@ router.post('/auth/login', (req, res) => {
     res.json({message: "Problem occured!"})
   }
 })
-
-
-
-
 
 module.exports = router
