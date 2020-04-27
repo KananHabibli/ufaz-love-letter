@@ -12,7 +12,7 @@ const { randomNumber } = require('../utils/utils')
 
 const Cards = require('../models/Cards')
 const Game = require('../models/Game')
-const User  = require('../models/User')
+
 router.get('/createLobby', (req, res) => {
     res.render('index/form')
 })
@@ -71,13 +71,6 @@ router.post('/createLobby', (req, res) => {
             message: "The deck can't be fetched!!" + e
         })
     })
-
-
-    // res.json({
-    //     username: req.body.username,
-    //     room: req.body.room,
-    //     number: req.body.number
-    // })
 })
 
 

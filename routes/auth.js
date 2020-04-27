@@ -21,18 +21,14 @@ router.get('/auth/verify', (req, res) => {
     console.log('not auth')
   }
 })
-
-
 router.get('/auth/logout', (req, res) => {
-  req.logout()
-  res.redirect('/')
+    req.session.destroy();
+    res.redirect('/');
 })
 
 router.get("/auth/facebook", passport.authenticate("facebook"));
 
-router.get(
-  "/auth/facebook/callback",
-  passport.authenticate("facebook", {
+router.get("/auth/facebook/callback", passport.authenticate("facebook", {
     successRedirect: "/profile",
     failureRedirect: "/fail"
   })
@@ -100,6 +96,8 @@ router.post('/auth/login', (req, res) => {
     res.json({message: "Problem occured!"})
   }
 })
+
+
 
 
 
