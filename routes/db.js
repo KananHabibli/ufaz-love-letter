@@ -5,39 +5,15 @@ const User = require('../models/User')
 const Card = require('../models/Cards')
 
 router.get('/db/users', (req, res) => {
-  User.find({}, function(err, users) {
-    var userMap = {};
-
-    users.forEach(function(user) {
-      userMap[user.username] = user;
-    });
-
-    res.json(userMap);  
+  User.find({}).then(users => {
+    res.json(users)  
   });
 })
 
 router.get('/db/cards', (req, res) => {
-    Card.find({}, function(err, cards) {
-      var cardMap = {};
-  
-      cards.forEach(function(card) {
-        cardMap[card.card] = card;
-      });
-  
-      res.json(cardMap);  
+    Card.find({}).then(cards => {
+      res.json(cards)  
     });
-})
-
-router.get('/db/session', (req, res) => {
-  Card.find({}, function(err, cards) {
-    var cardMap = {};
-
-    cards.forEach(function(card) {
-      cardMap[card.card] = card;
-    });
-
-    res.json(cardMap);  
-  });
 })
 
 module.exports = router
