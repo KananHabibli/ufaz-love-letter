@@ -81,10 +81,29 @@ app.use((req, res, next) => {
   next()
 })
 
-const hostname = '127.0.0.1';
 const port = process.env.PORT || 3001;
 
 app.use(cors()) 
+
+const morgan = require('morgan')
+const fs = require('fs')
+// create a write stream (in append mode)
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+
+app.use(morgan('combined', { stream: accessLogStream }))
+
+morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms'
+  ].join(' ')
+})
+
+morgan(':method :host :status :res[content-length] - :response-time ms');
+
 
 // Load routes
 const auth = require('./routes/auth')
@@ -96,6 +115,7 @@ app.use(auth)
 app.use(db)
 app.use(game)
 
+
 app.get('/', (req, res) => {
   console.log(req.session)
   res.render('index/home')
@@ -103,6 +123,9 @@ app.get('/', (req, res) => {
 
 io.on('connection', function(socket){
   console.log('a user connected', socket.id);
+  socket.emit("join", () => {
+    return session;
+  })
   socket.on('disconnect', function() {
     console.log('user disconnected');
   });

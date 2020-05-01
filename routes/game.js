@@ -86,13 +86,12 @@ router.post('/joinLobby', async (req, res) => {
         let game = await Game.findOne({lobbyPassword, lobbyName})
         game.players.push({...req.session, turn: true, outOfRound: false, roundsWon: 0})
         game.save().then(game => {
-            res.json({game})
+            return res.json({game})
         }).catch(e => {
-            res.json({
+            return res.json({
                 message: "There has been a problem while joining the lobby"
             })
         })
-        res.json(game)
     } else {
         res.json({
             message: "Please enter a lobby name"

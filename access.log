@@ -1,0 +1,4 @@
+::1 - - [01/May/2020:14:22:45 +0000] "POST /auth/signup HTTP/1.1" 200 317 "-" "PostmanRuntime/7.24.1"
+::1 - - [01/May/2020:14:23:08 +0000] "POST /auth/signup HTTP/1.1" 200 317 "-" "PostmanRuntime/7.24.1"
+::1 - - [01/May/2020:14:28:16 +0000] "POST /auth/signup HTTP/1.1" 200 317 "-" "PostmanRuntime/7.24.1"
+::1 - - [01/May/2020:14:29:16 +0000] "POST /auth/signup HTTP/1.1" 200 317 "-" "PostmanRuntime/7.24.1"
