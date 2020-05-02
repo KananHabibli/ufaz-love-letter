@@ -117,15 +117,19 @@ app.use(game)
 
 
 app.get('/', (req, res) => {
-  console.log(req.session)
+  // console.log(req.session)
   res.render('index/home')
+})
+
+app.get('/session', (req, res) => {
+  res.json(req.session)
 })
 
 io.on('connection', function(socket){
   console.log('a user connected', socket.id);
-  socket.emit("join", () => {
-    return session;
-  })
+  socket.emit('join', (game, error) => {
+    
+})
   socket.on('disconnect', function() {
     console.log('user disconnected');
   });

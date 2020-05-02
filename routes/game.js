@@ -62,7 +62,7 @@ router.post('/createLobby', ensureAuth, (req, res) => {
         })
 
         newGame.save().then(game => {
-            res.json(game)
+            res.redirect(`/lobby/${game.id}`)
         }).catch(e => {
             res.json({
                 message: "There has been an error while creating the game lobby!!" + e
@@ -86,7 +86,7 @@ router.post('/joinLobby', async (req, res) => {
         let game = await Game.findOne({lobbyPassword, lobbyName})
         game.players.push({...req.session, turn: true, outOfRound: false, roundsWon: 0})
         game.save().then(game => {
-            return res.json({game})
+            res.redirect(`/lobby/${game.id}`)
         }).catch(e => {
             return res.json({
                 message: "There has been a problem while joining the lobby"
@@ -97,6 +97,20 @@ router.post('/joinLobby', async (req, res) => {
             message: "Please enter a lobby name"
         })
     }
+})
+
+router.get("/lobby/:id", (req, res) => {
+    res.render('index/lobby')
+})
+
+router.get("/lobby/game/:id", (req, res) => {
+    Game.findOne({_id: req.params.id}).then(game => {
+        res.json(game)
+    }).catch(e => {
+        res.json({
+            message: "This lobby doesn't exist"
+        })
+    })
 })
 
 
