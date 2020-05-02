@@ -18,7 +18,7 @@ router.get('/solo/createLobby', (req, res) => {
     res.render('index/createSoloLobby')
 })
 
-router.post('/solo/createLobby', ensureAuth, (req, res) => {
+router.post('/solo/createLobby', (req, res) => {
     if(!req.body.lobbyName || !req.body.number){
         res.json({message: "You haven't entered lobby name"})
     }
@@ -87,7 +87,7 @@ router.post('/solo/createLobby', ensureAuth, (req, res) => {
 })
 
 
-// router.post('/createLobby', ensureAuth, (req, res) => {
+// router.post('/createLobby', (req, res) => {
 //     if(!req.body.lobbyName || !req.body.number){
 //         res.json({message: "You haven't entered lobby name"})
 //     }
