@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const GameSchema = new mongoose.Schema({
+const SoloGameSchema = new mongoose.Schema({
     lobbyName: {
         type: String,
         required: true
@@ -10,8 +10,8 @@ const GameSchema = new mongoose.Schema({
         minLength: 4
     },
     players: [Object],
-    currentCards: [[Object]],
     discardedCards: [Object],
+    distinctCards: [Object],
     theWholeDeck: [Object],
     goal: Number
 }, {
@@ -19,6 +19,6 @@ const GameSchema = new mongoose.Schema({
 })
 
 
-const Game = mongoose.model("Game", GameSchema)
+const SoloGame = mongoose.model("SoloGame", SoloGameSchema)
 
-module.exports = Game
+module.exports = SoloGame
