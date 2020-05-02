@@ -10,8 +10,8 @@ const GameSchema = new mongoose.Schema({
         minLength: 4
     },
     players: [Object],
-    currentCards: [[Object]],
     discardedCards: [Object],
+    distinctCards: [Object],
     theWholeDeck: [Object],
     goal: Number
 }, {

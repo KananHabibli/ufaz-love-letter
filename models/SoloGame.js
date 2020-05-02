@@ -9,7 +9,7 @@ const SoloGameSchema = new mongoose.Schema({
         trim: true,
         minLength: 4
     },
-    players: [Object],
+    player: Object,
     discardedCards: [Object],
     distinctCards: [Object],
     theWholeDeck: [Object],
