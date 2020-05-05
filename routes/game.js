@@ -141,8 +141,7 @@ router.post('/createLobby', (req, res) => {
         })
 
         newGame.save().then(game => {
-            res.json(game)
-            // res.redirect(`/lobby/${game.id}`)
+            res.redirect(`/game/lobby/${game.id}`)
         }).catch(e => {
             res.json({
                 message: "There has been an error while creating the game lobby!!" + e
@@ -172,8 +171,7 @@ router.post('/joinLobby', async (req, res) => {
             currentCards: [],
             discardedCards: []})
         game.save().then(game => {
-            // res.redirect(`/lobby/${game.id}`)
-            res.json(game)
+            res.redirect(`/game/lobby/${game.id}`)
         }).catch(e => {
             return res.json({
                 message: "There has been a problem while joining the lobby"
@@ -186,19 +184,27 @@ router.post('/joinLobby', async (req, res) => {
     }
 })
 
-// router.get("/lobby/:id", (req, res) => {
-//     res.render('index/lobby')
-// })
+router.get("/game/lobby/:id", (req, res) => {
+    Game.findOne({
+        _id: req.params.id
+    }).then(game => {
+        res.render('index/lobby', {
+            lobbyName: game.lobbyName
+        })
+    })
+})
 
-// router.get("/lobby/game/:id", (req, res) => {
-//     Game.findOne({_id: req.params.id}).then(game => {
-//         res.json(game)
-//     }).catch(e => {
-//         res.json({
-//             message: "This lobby doesn't exist"
-//         })
-//     })
-// })
+router.get('/game/findLobby', (req, res) => {
+    if(!req.query.id){
+        return res.json({
+            message: 'Query string should be added!!!'
+        })
+    }
+    let id = req.query.id
+    Game.findOne({_id: id}).then(game => {
+        res.json(game)
+    })
 
+})
 
 module.exports = router

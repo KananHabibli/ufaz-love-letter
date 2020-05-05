@@ -2,6 +2,12 @@ const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 const bcrypt = require('bcrypt')
+const sharp = require('sharp')
+const multer = require('multer')
+const jwt = require('jsonwebtoken')
+const config = require('config');
+const fs = require('fs');
+
 
 const User = require('../models/User')
 const sendEmail = require('../mails/mail')
@@ -43,16 +49,31 @@ router.get('/auth/signup', (req, res) => {
   res.render('index/signup');
 })
 
-router.post('/auth/signup', (req, res, next) => {
+const upload = multer({
+  dest: 'avatars',
+  limits: {
+      fileSize: 1000000
+  },
+  fileFilter(req, file, callback){
+      if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
+          return callback(new Error('Please upload  jpg, jpeg, png format'))
+      }
+      callback(undefined, true)
+  }
+})
+
+router.post('/auth/signup', upload.single('photo'), async (req, res, next) => {
   if (req.body.password !== req.body.passwordConf) {
     return res.json({message: "Passwords don't match"});
   }
+  console.log(req.file)
   if (req.body.email && req.body.username && req.body.password && req.body.passwordConf) {
+    const image = await sharp(req.file.path).resize({width:250, height: 250}).png().toBuffer();
     const newUser = new User({
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
-      image: "/public/Images/profile.jpeg",
+      image,
       bio: "",
       gamesWon: 0,
       gamesLost: 0
@@ -83,11 +104,19 @@ router.post('/auth/login', (req, res) => {
       }
       bcrypt.compare(req.body.password, user.password, (err, result) => {
         if(result){
-          req.session.user = user.username
-          req.session.email = user.email
-          console.log(req.session)
-          console.log(user)
-          res.json(user)
+          req.session.user = user
+          const payload = {
+            user
+          }
+          jwt.sign(
+            payload,
+            config.get('jwtSecret'),
+            { expiresIn: 360000 },
+            (err, token) => {
+              if (err) throw err;
+              res.json({ token });
+            }
+          );
         } else {
           res.json({message: "Password isn't correct"})
         }
@@ -96,6 +125,10 @@ router.post('/auth/login', (req, res) => {
   } else {
     res.json({message: "Problem occured!"})
   }
+})
+
+router.get('/profile/update', (req, res) => {
+  res.render('index/editProfile')
 })
 
 module.exports = router

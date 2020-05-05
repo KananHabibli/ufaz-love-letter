@@ -1,25 +1,49 @@
-var socket = io();
-
-let players = []
+var socket = io('/game');
 
 // Elements
+const lobbyName = document.getElementById('lobbyName')
+const players   = document.getElementById('players')
 
-// console.log(location.href)
-let id = location.href.split("/")
-id = id[id.length-1]
-// alert(id)
+let id = location.href.split('/')
+id = id[id.length - 1]
+alert(id)
 
-// const findGame = async id => {
-//     var game = await fetch(`http://ufaz-love-letter/lobby/${id}`) 
-//     return game.json()
-// }
+let Game
+function getGame(id) {
+    return fetch('http://localhost:3001/game/findLobby?id=' + id).then(game => {
+            return game.json()
+        })
+}
 
-fetch(`https://ufaz-love-letter.herokuapp.com/lobby/game/${id}`).then(data => {
-    document.getElementById("game").innerHTML = data.json()
+async function assignGame(){
+    Game = await getGame(id);
+}
+
+console.log(Game)
+
+// let Game = fetch('http://localhost:3001/game/findLobby?id=' + id).then(game => {
+//     return game
+// })
+
+
+document.getElementById('start').addEventListener('click', e => {
+    socket.emit('makeGame', () => {
+        alert("The game is being created . . . ")
+    })
+    socket.emit('getUser', () => {
+        console.log('Getting User . . .')
+    })
+    socket.on('sendUser', user => {
+        console.log(user)
+        socket.emit('join', {lobbyName, user}, error => {
+            if(error) alert(error)
+        })
+    })
+})
+
+
+
+
+socket.on('gameCreated', function (data) {
     console.log(data)
-})
-
-// let game = findGame(id)
-socket.emit('join', (user, error) => {
-    if(error) alert(error)
-})
+});

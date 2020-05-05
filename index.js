@@ -7,6 +7,7 @@ var cors = require('cors')
 const socketio = require('socket.io')
 const server = require('http').createServer(app)
 const io = socketio(server)
+const nsp = io.of('/game')
 
 // Load keys
 const keys = require('./config/keys')
@@ -70,6 +71,11 @@ const bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
+const methodOverride = require('method-override')
+
+// Method Override middleware
+app.use(methodOverride('_method'))
+
 // Models
 // require('./models/Cards')
 require('./models/User')
@@ -115,8 +121,9 @@ app.use(auth)
 app.use(db)
 app.use(game)
 
-
+let userData
 app.get('/', (req, res) => {
+  userData = req.session
   // console.log(req.session)
   res.render('index/home')
 })
@@ -125,11 +132,46 @@ app.get('/session', (req, res) => {
   res.json(req.session)
 })
 
-io.on('connection', function(socket){
+
+const { addUser, getUser, getUsersInRoom } = require('./utils/users')
+
+nsp.on('connection', function(socket){
   console.log('a user connected', socket.id);
-  socket.emit('join', (game, error) => {
-    
+  console.log(userData)
+  socket.on('getUser', function(){
+    nsp.emit('sendUser', userData)
+  })
+  socket.on('join', ({lobbyName, user}, callback) => {
+
+    const  player = addUser({id: socket.id, user, lobbyName})
+
+    socket.join(player.lobbyName)
+    callback()
+
 })
+socket.on('getPlayers', lobbyName => {
+  const players = getUsersInRoom(lobbyName)
+  nsp.emit('players', players)
+})
+  const gameCollection = {
+    totalgameCount : 0,
+    gameList : {}
+  };
+  socket.on('makeGame', function () {
+
+    var gameId = (Math.random()+1).toString(36).slice(2, 18);
+    console.log("Game Created by "+ socket.username + " w/ " + gameId);
+    gameCollection.gameList.gameId = gameId
+    gameCollection.gameList.gameId.playerOne = socket.username;
+    gameCollection.gameList.gameId.open = true;
+    gameCollection.totalGameCount ++;
+
+   nsp.emit('gameCreated', {
+     username: socket.id
+   });
+
+ });
+
   socket.on('disconnect', function() {
     console.log('user disconnected');
   });
@@ -138,4 +180,7 @@ io.on('connection', function(socket){
 
 server.listen(port, () => {
   console.log(`Server is up on ${port}`);
+  fs.writeFile(__dirname + '/start.log', 'started', (err, result) => {
+    if(err) console.log('error', err);
+  });
 });

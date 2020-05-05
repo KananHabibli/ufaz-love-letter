@@ -1,4 +1,4 @@
-<form class="w-50 mx-auto my-4 bg-light p-4" action="/auth/signup" method="POST">
+<form class="w-50 mx-auto my-4 bg-light p-4" action="/auth/signup" method="POST" enctype="multipart/form-data">
         <h1 class="text-center">Sign up</h1>
         <div class="form-group">
             <label for="name">Name</label>
@@ -16,5 +16,6 @@
             <label for="passwordConf"> Confirm Password</label>
             <input type="password" class="form-control" id="passwordConf" name="passwordConf" placeholder="Confirm password">
           </div>
+        <input type="file" name="photo" >
         <button type="submit" class="btn btn-info btn-block w-50 mx-auto">Submit</button>
       </form>
