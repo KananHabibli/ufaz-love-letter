@@ -85,6 +85,9 @@ router.post('/auth/login', (req, res) => {
       bcrypt.compare(req.body.password, user.password, (err, result) => {
         if(result){
           req.session.user = user
+          const payload = {
+            user
+          }
           jwt.sign(
             payload,
             config.get('jwtSecret'),
