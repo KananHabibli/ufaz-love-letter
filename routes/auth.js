@@ -2,7 +2,8 @@ const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 const bcrypt = require('bcrypt')
-
+const jwt = require('jsonwebtoken')
+const config = require('config')
 const User = require('../models/User')
 const sendEmail = require('../mails/mail')
 
@@ -83,11 +84,16 @@ router.post('/auth/login', (req, res) => {
       }
       bcrypt.compare(req.body.password, user.password, (err, result) => {
         if(result){
-          req.session.user = user.username
-          req.session.email = user.email
-          console.log(req.session)
-          console.log(user)
-          res.json(user)
+          req.session.user = user
+          jwt.sign(
+            payload,
+            config.get('jwtSecret'),
+            { expiresIn: 360000 },
+            (err, token) => {
+              if (err) throw err;
+              res.json({ token });
+            }
+          );
         } else {
           res.json({message: "Password isn't correct"})
         }
