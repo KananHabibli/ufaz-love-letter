@@ -15,9 +15,6 @@ const keys = require('./config/keys')
 // MongoDB database
 const mongoose = require('mongoose')
 
-// Map global promises
-mongoose.promise = global.Promise
-
 // Database Connection
 mongoose.connect(keys.mongoURI, {
     useNewUrlParser: true,
@@ -26,37 +23,12 @@ mongoose.connect(keys.mongoURI, {
 
 mongoose.set('useCreateIndex', true);
 
-// Session
-const session = require('express-session')
-const MongoStore = require('connect-mongo')(session);
-
-// Session Middleware //secure: true
-app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  store: new MongoStore({ 
-    mongooseConnection: mongoose.connection,
-    ttl: 14 * 24 * 60 * 60 }),
-  secret: 'loveLetter',
-  resave: false,
-  saveUninitialized: false
-}))
 
 // Built-in node package for working with file and directory paths
 const path = require('path')
 
 // Static public directory
 app.use(express.static(path.join(__dirname, 'public')))
-
-// Passportjs
-const passport = require('passport')
-
-// Passport Config
-require('./config/passport_google')(passport)
-require('./config/passport_facebook')(passport)
-
-// Passport middleware
-app.use(passport.initialize())
-app.use(passport.session())
 
 // Handlebars
 const exphbs = require('express-handlebars')
@@ -77,9 +49,6 @@ const methodOverride = require('method-override')
 app.use(methodOverride('_method'))
 
 // Models
-// require('./models/Cards')
-require('./models/User')
-require('./models/User_google')
 const Cards = require('./models/Cards')
 const Game = require('./models/Game')
 // Set global vars
@@ -113,24 +82,16 @@ morgan(':method :host :status :res[content-length] - :response-time ms');
 
 
 // Load routes
-const auth = require('./routes/auth')
 const db = require('./routes/db')
-const game = require('./routes/game')
+// const game = require('./routes/game')
 
 // Use routes
-app.use(auth)
 app.use(db)
-app.use(game)
+// app.use(game)
 
-let userData
+
 app.get('/', (req, res) => {
-  userData = req.session
-  console.log(lobbies)
   res.render('index/home')
-})
-
-app.get('/session', (req, res) => {
-  res.json(req.session)
 })
 
 let lobbies = {}
