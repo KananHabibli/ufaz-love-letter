@@ -114,7 +114,8 @@ morgan(':method :host :status :res[content-length] - :response-time ms');
 // Load routes
 const auth = require('./routes/auth')
 const db = require('./routes/db')
-const game = require('./routes/game')
+const game = require('./routes/game').router
+let lobbies = require('./routes/game').lobbies
 
 // Use routes
 app.use(auth)
@@ -133,7 +134,7 @@ app.get('/session', (req, res) => {
 })
 
 
-const { addUser, getUser, getUsersInRoom } = require('./utils/users')
+const { getUserRooms } = require('./utils/users')
 
 nsp.on('connection', function(socket){
   console.log('a user connected', socket.id);
@@ -141,41 +142,25 @@ nsp.on('connection', function(socket){
   socket.on('getUser', function(){
     nsp.emit('sendUser', userData)
   })
-  socket.on('join', ({lobbyName, user}, callback) => {
+  socket.on('new-user', (lobby, user) => {
+    socket.join(lobby)
+    lobbies[lobby].users[socket.id] = user
+    socket.emit('send-message', user)
+  })
+  socket.on('getPlayers', lobbyName => {
+    const players = getUsersInRoom(lobbyName)
+    nsp.emit('players', players)
+  })
 
-    const  player = addUser({id: socket.id, user, lobbyName})
-
-    socket.join(player.lobbyName)
-    callback()
-
-})
-socket.on('getPlayers', lobbyName => {
-  const players = getUsersInRoom(lobbyName)
-  nsp.emit('players', players)
-})
-  const gameCollection = {
-    totalgameCount : 0,
-    gameList : {}
-  };
-  socket.on('makeGame', function () {
-
-    var gameId = (Math.random()+1).toString(36).slice(2, 18);
-    console.log("Game Created by "+ socket.username + " w/ " + gameId);
-    gameCollection.gameList.gameId = gameId
-    gameCollection.gameList.gameId.playerOne = socket.username;
-    gameCollection.gameList.gameId.open = true;
-    gameCollection.totalGameCount ++;
-
-   nsp.emit('gameCreated', {
-     username: socket.id
-   });
-
- });
-
-  socket.on('disconnect', function() {
-    console.log('user disconnected');
+  socket.on('disconnect', () => {
+    getUserRooms(socket).forEach(room => {
+      socket.to(room).broadcast.emit('user-disconnected', rooms[room].users[socket.id])
+      delete rooms[room].users[socket.id]
+    })
   });
 });
+
+
 
 
 server.listen(port, () => {

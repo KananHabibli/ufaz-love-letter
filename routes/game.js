@@ -86,12 +86,17 @@ router.post('/solo/createLobby', (req, res) => {
     })
 })
 
+let lobbies = {}
 
 router.post('/createLobby', (req, res) => {
     if(!req.body.lobbyName || !req.body.number){
         res.json({message: "You haven't entered lobby name"})
     }
 
+    if (lobbies[req.body.lobbyName] != null) {
+        return res.redirect('/')
+    }
+    lobbies[req.body.lobbyName] = { users: {} }
     let number = req.body.number
 
     Cards.find({}).then(deck => {
@@ -207,4 +212,4 @@ router.get('/game/findLobby', (req, res) => {
 
 })
 
-module.exports = router
+module.exports = {router, lobbies}

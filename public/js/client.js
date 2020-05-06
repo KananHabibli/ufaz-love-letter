@@ -1,32 +1,32 @@
 var socket = io('/game');
 
 // Elements
-const lobbyName = document.getElementById('lobbyName')
+const lobbyName = document.getElementById('lobbyName').textContent
 const players   = document.getElementById('players')
 
-let id = location.href.split('/')
-id = id[id.length - 1]
-alert(id)
+// console.log(lobbyName)
 
-let Game
-function getGame(id) {
-    return fetch('http://localhost:3001/game/findLobby?id=' + id).then(game => {
-            return game.json()
-        })
-}
+// let id = location.href.split('/')
+// id = id[id.length - 1]
+// alert(id)
 
-async function assignGame(){
-    Game = await getGame(id);
-}
+// let Game
+// function getGame(id) {
+//     return fetch('http://localhost:3001/game/findLobby?id=' + id).then(game => {
+//             return game.json()
+//         })
+// }
 
-console.log(Game)
+// async function assignGame(){
+//     Game = await getGame(id);
+// }
 
-// let Game = fetch('http://localhost:3001/game/findLobby?id=' + id).then(game => {
-//     return game
-// })
+// console.log(Game)
 
 
-document.getElementById('start').addEventListener('click', e => {
+
+
+// document.getElementById('start').addEventListener('click', e => {
     socket.emit('makeGame', () => {
         alert("The game is being created . . . ")
     })
@@ -35,13 +35,20 @@ document.getElementById('start').addEventListener('click', e => {
     })
     socket.on('sendUser', user => {
         console.log(user)
-        socket.emit('join', {lobbyName, user}, error => {
-            if(error) alert(error)
-        })
+        socket.emit('new-user', lobbyName, user)
     })
+// })
+
+
+socket.on('send-message', user => {
+    var text = document.createTextNode(`${user.user.username} is here`);
+    players.appendChild(text);
 })
 
 
+socket.on('user-disconnected', user => {
+    confirm(`${user.user.username} disconnected`)
+  })
 
 
 socket.on('gameCreated', function (data) {
