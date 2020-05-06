@@ -4,8 +4,6 @@ const passport = require('passport')
 const bcrypt = require('bcrypt')
 const sharp = require('sharp')
 const multer = require('multer')
-const jwt = require('jsonwebtoken')
-const config = require('config');
 const fs = require('fs');
 
 
@@ -105,18 +103,7 @@ router.post('/auth/login', (req, res) => {
       bcrypt.compare(req.body.password, user.password, (err, result) => {
         if(result){
           req.session.user = user
-          const payload = {
-            user
-          }
-          jwt.sign(
-            payload,
-            config.get('jwtSecret'),
-            { expiresIn: 360000 },
-            (err, token) => {
-              if (err) throw err;
-              res.json({ token });
-            }
-          );
+          return res.json(result)
         } else {
           res.json({message: "Password isn't correct"})
         }
