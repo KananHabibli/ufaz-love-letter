@@ -19,12 +19,10 @@ socket.on('sendUser', user => {
 socket.emit('new-user', room, nickname, number)
 
 socket.on('send-first-message', ( newPlayer, lobby,  status, rooms) => {
-    var text = document.createTextNode(`Status : ${status} `);
-    players.appendChild(text);
-    text = document.createTextNode(`Player : ${newPlayer.nickname} `);
-    players.appendChild(text);
-    text = document.createTextNode(`Lobby : ${lobby.room} `);
-    players.appendChild(text);
+    var tag = document.createElement("p");
+    var text = document.createTextNode(`Status : ${status} Player : ${newPlayer.nickname} Lobby : ${lobby.room} `);
+    tag.appendChild(text);
+    players.appendChild(tag)
     console.log(rooms)
 })
 
