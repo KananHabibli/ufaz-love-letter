@@ -1,12 +1,11 @@
-<div class="centered-form__box">
+<div class="p-5">
     <h1>Join</h1>
-    <form action="/createLobby" method="POST">
+    <form action="/createLobby" method="GET">
+        <label for="">Pick a nickname</label>
+        <input type="text" class="form-control w-50" name="nickname" placeholder="ExMeliodas" required>
         <label for="">Lobby name</label>
-        <input type="text" name="lobbyName" placeholder="Lobby name" required>
+        <input type="text" class="form-control w-50" name="lobbyName" placeholder="Lobby name" required>
         <label for="">Lobby Password</label>
-        <input type="password" name="lobbyPassword" placeholder="****">
-        <label for="">Number of players</label>
-        <input type="number" name="number" value="4" required>
-        <button id="createLobby">Join in</button>
-    </form> 
+        <input type="number" class="form-control w-50" name="number" value="4" min="2" max="4" required>
+        <button id="createLobby" class="btn btn-success mt-3">Play
 </div>

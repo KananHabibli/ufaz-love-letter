@@ -48,9 +48,7 @@ const methodOverride = require('method-override')
 // Method Override middleware
 app.use(methodOverride('_method'))
 
-// Models
-const Cards = require('./models/Cards')
-const Game = require('./models/Game')
+
 // Set global vars
 app.use((req, res, next) => {
   res.locals.user = req.user || null
@@ -80,36 +78,48 @@ morgan(function (tokens, req, res) {
 
 morgan(':method :host :status :res[content-length] - :response-time ms');
 
-
-// Load routes
+// Routes
 const db = require('./routes/db')
-// const game = require('./routes/game')
-
-// Use routes
 app.use(db)
-// app.use(game)
+
+// Models
+const Cards = require('./models/Cards')
+
+const { getUserRooms } = require('./utils/rooms')
+
+app.get('/',function(req,res) {
+    res.sendFile('index.html');
+  });
 
 
-app.get('/', (req, res) => {
-  res.render('index/home')
-})
+let rooms = []
 
-let lobbies = {}
-
-app.post('/createLobby', (req, res) => {
-    if(!req.body.lobbyName || !req.body.number){
-        res.json({message: "You haven't entered lobby name"})
+nsp.on('connection', function(socket){
+  console.log('a user connected', socket.id);
+  nsp.emit('allRooms', rooms)
+  socket.on('new-user', async (room, nickname, number) => { 
+    let newPlayer = {
+        id: socket.id,
+        nickname,
+        cardsOnHand:[],
+        cardsDiscarded:[],
+        hisTurn: false,
+        isDoingMove: false,
+        isOutOfRound: false,
+        isProtected: false
     }
-
-    if (lobbies[req.body.lobbyName] != null) {
-        return res.redirect('/')
-    }
-
-    lobbies[req.body.lobbyName] = { users: {} }
-    console.log(lobbies)
-    let number = req.body.number
-
-    Cards.find({}).then(deck => {
+    let status
+    let lobby = rooms.find(roomValue => roomValue.room == room)
+    if(lobby){
+        let index = rooms.indexOf(lobby)
+        console.log(rooms[index])
+        if(rooms[index].numberOfPlayers > rooms[index].players.length - 1){
+            rooms[index].players.push(newPlayer)
+            lobby = rooms[index]
+        }
+        status = "existed"
+    } else {
+        let deck = await Cards.find({})
         let mymap = new Map();
         let distinctCards = deck.filter(el => { 
             const val = mymap.get(el.strength); 
@@ -125,7 +135,7 @@ app.post('/createLobby', (req, res) => {
             mymap.set(el.strength, el.id); 
             return true; 
         });
-        let discardedCards= []
+        let discardedCards = []
         let goal
         if(number == 4){
             goal = 4
@@ -139,103 +149,28 @@ app.post('/createLobby', (req, res) => {
                 deck.splice(rand, 1)
             }
         }
-        let newGame = new Game({
-            lobbyName: req.body.lobbyName,
-            lobbyPassword: req.body.lobbyPassword,
-            players:[{
-                ...req.session,
-                turn: true,
-                outOfRound: false,
-                roundsWon: 0,
-                currentCards: [],
-                discardedCards: []}],
-            distinctCards,
-            discardedCards,
-            theWholeDeck: deck,
-            goal
-        })
-
-        newGame.save().then(game => {
-            res.redirect(`/game/lobby/${game.id}`)
-        }).catch(e => {
-            res.json({
-                message: "There has been an error while creating the game lobby!!" + e
-            })
-        })
-    }).catch(e => {
-        res.json({
-            message: "The deck can't be fetched!!" + e
-        })
-    })
-})
-
-app.get('/joinLobby', (req, res) => {
-    res.render('index/joinLobby')
-})
-
-app.post('/joinLobby', async (req, res) => {
-    if(req.body.lobbyName){
-        const lobbyName = req.body.lobbyName
-        const lobbyPassword = req.body.lobbyPassword
-        let game = await Game.findOne({lobbyPassword, lobbyName})
-        game.players.push({
-            ...req.session,
-            turn: false,
-            outOfRound: false,
-            roundsWon: 0,
-            currentCards: [],
-            discardedCards: []})
-        game.save().then(game => {
-            res.redirect(`/game/lobby/${game.id}`)
-        }).catch(e => {
-            return res.json({
-                message: "There has been a problem while joining the lobby"
-            })
-        })
-    } else {
-        res.json({
-            message: "Please enter a lobby name"
-        })
+        let newRoom = {
+            room,
+            goal,
+            numberOfPlayers: number,
+            players: [newPlayer],
+            game: {
+                playerAttacking:"",
+                playerAttacked:"",
+                cardPlayer:{}
+            },
+            cards:{
+                gameCards: deck,
+                discardedCards,
+                distinctCards,
+            }
     }
-})
-
-app.get("/game/lobby/:id", (req, res) => {
-    Game.findOne({
-        _id: req.params.id
-    }).then(game => {
-        res.render('index/lobby', {
-            lobbyName: game.lobbyName
-        })
-    })
-})
-
-app.get('/game/findLobby', (req, res) => {
-    if(!req.query.id){
-        return res.json({
-            message: 'Query string should be added!!!'
-        })
+    lobby = newRoom
+    status = "new"
+    rooms.push(newRoom)
     }
-    let id = req.query.id
-    Game.findOne({_id: id}).then(game => {
-        res.json(game)
-    })
-
-})
-
-
-const { getUserRooms } = require('./utils/users')
-
-nsp.on('connection', function(socket){
-  console.log('a user connected', socket.id);
-  
-  socket.on('getUser', function(){
-    nsp.emit('sendUser', userData)
-  })
-  socket.on('new-user', (lobby, user) => {
-    console.log(lobby)
-    socket.join(lobby)
-    lobbies[lobby].users[socket.id] = user
-    socket.emit('send-message', user)
+    socket.join(room)
+    nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
   })
   socket.on('getPlayers', lobbyName => {
     const players = getUsersInRoom(lobbyName)
@@ -243,11 +178,11 @@ nsp.on('connection', function(socket){
   })
 
   socket.on('disconnect', () => {
-    // getUserRooms(socket).forEach(lobby => {
-    //   socket.to(lobby).broadcast.emit('user-disconnected', lobbies[lobby].users[socket.id])
-    //   delete lobbies[lobby].users[socket.id]
-    // })
-    console.log('A user disconnected')
+      socket.on('removeUser', room => {
+        let lobby = rooms.filter(roomValue => roomValue.room == room);
+        var socket = lobby.players.filter(player => player.id == socket.id)
+        lobby.players.pop(lobby.players.indexOf(player))
+      })
    });
 });
 
