@@ -85,19 +85,26 @@ app.use(db)
 // Models
 const Cards = require('./models/Cards')
 
+
+// Helper functions
 const { getUserRooms } = require('./utils/rooms')
 const { randomNumber } = require('./utils/utils')
 const errorMap = require('./utils/errorMap')
 
+// Main route
 app.get('/',function(req,res) {
   res.sendFile('index.html');
 });
 
+// Global variable to hold all the lobbies
 let rooms = []
 
+// TCP connection
 nsp.on('connection', function(socket){
   console.log('a user connected', socket.id);
+  // Adding player to the lobby
   socket.on('new-user', async (room, nickname, number) => {
+    // Player object
     let newPlayer = {
         id: socket.id,
         nickname,
@@ -109,29 +116,37 @@ nsp.on('connection', function(socket){
         isProtected: false
     }
     let status
+    // Looking for the lobby
     let lobby = rooms.find(roomValue => roomValue.room == room)
+    // Checking whether the lobby to-be-created has already been created or not
     if(lobby && number !== null){
       socket.emit('throwError', 101)
       return
     }
+    // Checking if lobby exist or not
     if(lobby){
-        let index = rooms.indexOf(lobby)
-        if(rooms[index].isFull == false){
-          if(rooms[index].players.some(player => player.nickname === nickname)){
-            socket.emit('throwError', 200)
-          } else {
-            rooms[index].players.push(newPlayer)
-            lobby = rooms[index]
-            status = "existed"
-            socket.join(room)
-            if(rooms[index].players.length == parseInt(rooms[index].numberOfPlayers)){
-              rooms[index].isFull = true
-            }
-            nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
-          }
+      let index = rooms.indexOf(lobby)
+      // Checking if lobby is full or not
+      if(rooms[index].isFull == false){
+        // Checking if the nickname of the player is in use or not
+        if(rooms[index].players.some(player => player.nickname === nickname)){
+          socket.emit('throwError', 200)
         } else {
-          nsp.emit('throwError', 100)
+          rooms[index].players.push(newPlayer)
+          lobby = rooms[index]
+          status = "existed"
+          socket.join(room)
+          // Checking with final addition if lobby is fulled or not
+          if(rooms[index].players.length == parseInt(rooms[index].numberOfPlayers)){
+            rooms[index].isFull = true
+          }
+          // Returning a response with data of a lobby and a player
+          nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
         }
+      } else {
+        nsp.emit('throwError', 100)
+      }
+      // Checking if the user is trying to create the lobby or joining it 
     }else if(number !== null) {
       let deck = await Cards.find({})
       let mymap = new Map();
@@ -151,16 +166,19 @@ nsp.on('connection', function(socket){
       });
       let discardedCards = []
       let goal
+      // Getting cards ready for 4-player game
       if(number == 4){
           goal = 4
           let rand = randomNumber(deck.length)
           discardedCards.push(deck[rand])
           deck.splice(rand, 1)
+      // Getting cards ready for 3-player game
       }else if(number == 3){
           goal = 5
           let rand = randomNumber(deck.length)
           discardedCards.push(deck[rand])
           deck.splice(rand, 1)
+      // Getting cards ready for 2-player game
       }else if(number == 2){
           goal = 7
           for(let i = 0; i < 3; i++){
@@ -169,6 +187,7 @@ nsp.on('connection', function(socket){
               deck.splice(rand, 1)
           }
       }
+      // Creating new lobby
       let newRoom = {
           room,
           goal,
