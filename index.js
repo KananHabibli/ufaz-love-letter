@@ -86,18 +86,27 @@ app.use(db)
 const Cards = require('./models/Cards')
 
 const { getUserRooms } = require('./utils/rooms')
+const { randomNumber } = require('./utils/utils')
 
 app.get('/',function(req,res) {
     res.sendFile('index.html');
   });
 
 
+// JS Map for errors
+// 100s for lobby errors
+// 200s for player errors
+let errorMap = new Map();
+errorMap.set(100, "Lobby is full!");
+errorMap.set(101, "Lobby has already created!")
+errorMap.set(102, "Lobby doesn't exist")
+errorMap.set(200, "This nickname is already in use in this lobby!");
 let rooms = []
 
 nsp.on('connection', function(socket){
   console.log('a user connected', socket.id);
   nsp.emit('allRooms', rooms)
-  socket.on('new-user', async (room, nickname, number) => { 
+  socket.on('new-user', async (room, nickname, number) => {
     let newPlayer = {
         id: socket.id,
         nickname,
@@ -110,67 +119,85 @@ nsp.on('connection', function(socket){
     }
     let status
     let lobby = rooms.find(roomValue => roomValue.room == room)
+    if(lobby && number !== null){
+      socket.emit('throwError', errorMap.get(101))
+    }
     if(lobby){
         let index = rooms.indexOf(lobby)
-        console.log(rooms[index])
-        if(rooms[index].numberOfPlayers > rooms[index].players.length - 1){
-            rooms[index].players.push(newPlayer)
-            lobby = rooms[index]
+        if(rooms[index].isFull == false){
+          rooms[index].players.push(newPlayer)
+          lobby = rooms[index]
+          status = "existed"
+          socket.join(room)
+          if(rooms[index].players.length == parseInt(rooms[index].numberOfPlayers)){
+            rooms[index].isFull = true
+          }
+          nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
+        } else {
+          nsp.emit('throwError', errorMap.get(102))
         }
-        status = "existed"
-    } else {
-        let deck = await Cards.find({})
-        let mymap = new Map();
-        let distinctCards = deck.filter(el => { 
-            const val = mymap.get(el.strength); 
-            if(val) { 
-                if(el.id < val) { 
-                    mymap.delete(el.strength); 
-                    mymap.set(el.strength, el.id); 
-                    return true; 
-                } else { 
-                    return false; 
-                } 
-            } 
-            mymap.set(el.strength, el.id); 
-            return true; 
-        });
-        let discardedCards = []
-        let goal
-        if(number == 4){
-            goal = 4
-        }else if(number == 3){
-            goal = 5
-        }else if(number == 2){
-            goal = 7
-            for(let i = 0; i < 3; i++){
-                let rand = randomNumber(deck.length)
-                discardedCards.push(deck[rand])
-                deck.splice(rand, 1)
-            }
-        }
-        let newRoom = {
-            room,
-            goal,
-            numberOfPlayers: number,
-            players: [newPlayer],
-            game: {
-                playerAttacking:"",
-                playerAttacked:"",
-                cardPlayer:{}
-            },
-            cards:{
-                gameCards: deck,
-                discardedCards,
-                distinctCards,
-            }
-    }
+    }else if(number !== null) {
+      let deck = await Cards.find({})
+      let mymap = new Map();
+      let distinctCards = deck.filter(el => { 
+          const val = mymap.get(el.strength); 
+          if(val) { 
+              if(el.id < val) { 
+                  mymap.delete(el.strength); 
+                  mymap.set(el.strength, el.id); 
+                  return true; 
+              } else { 
+                  return false; 
+              } 
+          } 
+          mymap.set(el.strength, el.id); 
+          return true; 
+      });
+      let discardedCards = []
+      let goal
+      if(number == 4){
+          goal = 4
+          let rand = randomNumber(deck.length)
+          discardedCards.push(deck[rand])
+          deck.splice(rand, 1)
+      }else if(number == 3){
+          goal = 5
+          let rand = randomNumber(deck.length)
+          discardedCards.push(deck[rand])
+          deck.splice(rand, 1)
+      }else if(number == 2){
+          goal = 7
+          for(let i = 0; i < 3; i++){
+              let rand = randomNumber(deck.length)
+              discardedCards.push(deck[rand])
+              deck.splice(rand, 1)
+          }
+      }
+      let newRoom = {
+          room,
+          goal,
+          isFull: false,
+          numberOfPlayers: number,
+          players: [newPlayer],
+          game: {
+              playerAttacking:"",
+              playerAttacked:"",
+              cardPlayer:{}
+          },
+          cards:{
+              gameCards: deck,
+              discardedCards,
+              distinctCards,
+          }
+      }
     lobby = newRoom
     status = "new"
     rooms.push(newRoom)
-    }
     socket.join(room)
     nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
+    } else {
+      nsp.emit('throwError', errorMap.get(102))
+    }
   })
   socket.on('getPlayers', lobbyName => {
     const players = getUsersInRoom(lobbyName)
