@@ -25,6 +25,8 @@ socket.on('throwError', error => {
     alert(error)
 })
 
+// socket.on('allRooms', rooms => console.log(rooms))
+
 
 socket.emit('removeUser',room, () => {
     confirm(`${nickname} disconnected`)

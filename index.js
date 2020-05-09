@@ -87,25 +87,16 @@ const Cards = require('./models/Cards')
 
 const { getUserRooms } = require('./utils/rooms')
 const { randomNumber } = require('./utils/utils')
+const errorMap = require('./utils/errorMap')
 
 app.get('/',function(req,res) {
-    res.sendFile('index.html');
-  });
+  res.sendFile('index.html');
+});
 
-
-// JS Map for errors
-// 100s for lobby errors
-// 200s for player errors
-let errorMap = new Map();
-errorMap.set(100, "Lobby is full!");
-errorMap.set(101, "Lobby has already created!")
-errorMap.set(102, "Lobby doesn't exist")
-errorMap.set(200, "This nickname is already in use in this lobby!");
 let rooms = []
 
 nsp.on('connection', function(socket){
   console.log('a user connected', socket.id);
-  nsp.emit('allRooms', rooms)
   socket.on('new-user', async (room, nickname, number) => {
     let newPlayer = {
         id: socket.id,
@@ -204,6 +195,7 @@ nsp.on('connection', function(socket){
       nsp.emit('throwError', 102)
     }
   })
+  nsp.emit('allRooms', rooms)
   socket.on('getPlayers', lobbyName => {
     const players = getUsersInRoom(lobbyName)
     nsp.emit('players', players)
@@ -223,7 +215,4 @@ nsp.on('connection', function(socket){
 
 server.listen(port, () => {
   console.log(`Server is up on ${port}`);
-  fs.writeFile(__dirname + '/start.log', 'started', (err, result) => {
-    if(err) console.log('error', err);
-  });
 });
