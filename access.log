@@ -519,3 +519,4 @@
 ::1 - - [07/May/2020:10:55:28 +0000] "GET /createLobby?nickname=ExMeliodas&lobbyName=Lobby+1&number=4 HTTP/1.1" 404 150 "http://localhost:3001/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36"
 ::1 - - [07/May/2020:10:55:46 +0000] "GET /createLobby?nickname=ExMeliodas&lobbyName=Lobby+1&number=4 HTTP/1.1" 404 150 "http://localhost:3001/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36"
 ::1 - - [09/May/2020:15:33:07 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:3001/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"
+::1 - - [09/May/2020:16:45:51 +0000] "GET /l HTTP/1.1" 404 140 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"

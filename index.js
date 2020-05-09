@@ -120,21 +120,26 @@ nsp.on('connection', function(socket){
     let status
     let lobby = rooms.find(roomValue => roomValue.room == room)
     if(lobby && number !== null){
-      socket.emit('throwError', errorMap.get(101))
+      socket.emit('throwError', 101)
+      return
     }
     if(lobby){
         let index = rooms.indexOf(lobby)
         if(rooms[index].isFull == false){
-          rooms[index].players.push(newPlayer)
-          lobby = rooms[index]
-          status = "existed"
-          socket.join(room)
-          if(rooms[index].players.length == parseInt(rooms[index].numberOfPlayers)){
-            rooms[index].isFull = true
+          if(rooms[index].players.some(player => player.nickname === nickname)){
+            socket.emit('throwError', 200)
+          } else {
+            rooms[index].players.push(newPlayer)
+            lobby = rooms[index]
+            status = "existed"
+            socket.join(room)
+            if(rooms[index].players.length == parseInt(rooms[index].numberOfPlayers)){
+              rooms[index].isFull = true
+            }
+            nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
           }
-          nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
         } else {
-          nsp.emit('throwError', errorMap.get(102))
+          nsp.emit('throwError', 100)
         }
     }else if(number !== null) {
       let deck = await Cards.find({})
@@ -196,7 +201,7 @@ nsp.on('connection', function(socket){
     socket.join(room)
     nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
     } else {
-      nsp.emit('throwError', errorMap.get(102))
+      nsp.emit('throwError', 102)
     }
   })
   socket.on('getPlayers', lobbyName => {
