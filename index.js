@@ -88,7 +88,7 @@ const Cards = require('./models/Cards')
 
 // Helper functions
 const { getUserRooms } = require('./utils/rooms')
-const { randomNumber } = require('./utils/utils')
+const { randomNumber, shuffleCards } = require('./utils/utils')
 const errorMap = require('./utils/errorMap')
 
 // Main route
@@ -166,6 +166,7 @@ nsp.on('connection', function(socket){
       });
       let discardedCards = []
       let goal
+      deck = shuffleCards(deck)
       // Getting cards ready for 4-player game
       if(number == 4){
           goal = 4

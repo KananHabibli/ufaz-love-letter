@@ -4,9 +4,7 @@ var socket = io('/game');
 const players  = document.getElementById('players')
 
 // Parsing the query string
-// Options
 const { nickname, room, number } = Qs.parse(location.search, {ignoreQueryPrefix : true})
-// alert(nickname + room + number)
 
 console.log(number)
 
