@@ -522,3 +522,6 @@
 ::1 - - [09/May/2020:16:45:51 +0000] "GET /l HTTP/1.1" 404 140 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"
 ::1 - - [10/May/2020:11:36:58 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:3001/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"
 ::1 - - [12/May/2020:11:19:03 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:3001/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"
+::1 - - [12/May/2020:17:24:11 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:3001/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"
+::1 - - [12/May/2020:20:02:06 +0000] "GET /robots.txt HTTP/1.1" 404 149 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"
+::1 - - [12/May/2020:20:02:07 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:4000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"

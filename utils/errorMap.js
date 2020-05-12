@@ -3,7 +3,7 @@ let errorMap = new Map();
 
 // 100s for lobby errors
 errorMap.set(100, "Lobby is full!");
-errorMap.set(101, "Lobby has already created!")
+errorMap.set(101, "Lobby has already been created!")
 errorMap.set(102, "Lobby doesn't exist")
 
 // 200s for player errors

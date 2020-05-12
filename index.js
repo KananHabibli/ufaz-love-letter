@@ -55,7 +55,7 @@ app.use((req, res, next) => {
   next()
 })
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 4000;
 
 app.use(cors()) 
 
@@ -88,7 +88,7 @@ const Cards = require('./models/Cards')
 
 // Helper functions
 const { getUserRooms } = require('./utils/rooms')
-const { randomNumber, shuffleCards } = require('./utils/utils')
+const { randomNumber, shuffleCards, discardCard, findCard } = require('./utils/utils')
 const errorMap = require('./utils/errorMap')
 
 // Main route
@@ -215,11 +215,41 @@ nsp.on('connection', function(socket){
       nsp.to(socket.id).emit('throwError', 102)
     }
   })
+
+
+  socket.on('drawCard', (room, player, deck) => {
+    player.cardsOnHand.push(deck[0])
+    deck.splice(0,1)
+    nsp.to(room).emit('drawnCardReady', player, deck)
+  })
+
+  socket.on('discardCard', (room, player, card) => {
+    player = discardCard(player, card)
+    nsp.to(room).emit('discardedCardReady', player)
+  })
+
+  socket.on('guard', (room, playerAttacking, guess, playerAttacked) => {
+    if(playerAttacked.cardsOnHand[0].card === guess){
+      playerAttacked.isOutOfRound = true
+      let playerAttacked = discardCard(playerAttacked, playerAttacked.cardsOnHand[0])
+      let result = 'Guess is right'
+    } else {
+      let result = 'Guess is wrong'
+    }
+    let discardingAttackingCard = findCard(playerAttacking, guess)
+    playerAttacking = discardCard(playerAttacking, discardingAttackingCard)
+    playerAttacking.hisTurn = false
+    let result = 'Guess is right'
+    nsp.to(room).emit('guardReady', playerAttacking, playerAttacked, result)
+  })
+
   nsp.emit('allRooms', rooms)
   socket.on('getPlayers', lobbyName => {
     const players = getUsersInRoom(lobbyName)
     nsp.emit('players', players)
   })
+
+ 
 
 socket.on('disconnect', () => {
     console.log(`User disconnected ${socket.id}`)

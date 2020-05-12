@@ -17,7 +17,19 @@ const shuffleCards = deck => {
     return deck;
 }
 
+const findCard = (cards, cardName) => {
+    return cards.findIndex(currentCard => currentCard.card === cardName)
+}
+
+const discardCard = (player, card) => {
+    player.cardsDiscarded.push(card)
+    player.cardsOnHand.splice(findCard(player.cardsOnHand, card.card), 1)
+    return player
+}
+
 module.exports = {
     randomNumber,
-    shuffleCards
+    shuffleCards,
+    discardCard,
+    findCard
 }
