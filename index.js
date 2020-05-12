@@ -221,12 +221,15 @@ nsp.on('connection', function(socket){
     nsp.emit('players', players)
   })
 
-  socket.on('disconnect', () => {
-      socket.on('removeUser', room => {
-        let lobby = rooms.filter(roomValue => roomValue.room == room);
-        var socket = lobby.players.filter(player => player.id == socket.id)
-        lobby.players.pop(lobby.players.indexOf(player))
-      })
+socket.on('disconnect', () => {
+    console.log(`User disconnected ${socket.id}`)
+    // socket.emit('getRommData')
+
+    //   socket.on('removeUser', room => {
+    //     let lobby = rooms.filter(roomValue => roomValue.room == room);
+    //     var socket = lobby.players.filter(player => player.id == socket.id)
+    //     lobby.players.pop(lobby.players.indexOf(player))
+    //   })
    });
 });
 

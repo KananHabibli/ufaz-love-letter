@@ -25,9 +25,12 @@ socket.on('throwError', error => {
 
 // socket.on('allRooms', rooms => console.log(rooms))
 
+// socket.on('getRoomData', () => {
+//     socket.emit('removeUser', room)
+// }, () => {
+//     alert(`${nickname} disconnected`)
+// })
 
-socket.emit('removeUser',room, () => {
-    confirm(`${nickname} disconnected`)
-})
+
 
 
