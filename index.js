@@ -120,7 +120,7 @@ nsp.on('connection', function(socket){
     let lobby = rooms.find(roomValue => roomValue.room == room)
     // Checking whether the lobby to-be-created has already been created or not
     if(lobby && number !== null){
-      socket.emit('throwError', 101)
+      nsp.to(socket.id).emit('throwError', 101)
       return
     }
     // Checking if lobby exist or not
@@ -130,7 +130,7 @@ nsp.on('connection', function(socket){
       if(rooms[index].isFull == false){
         // Checking if the nickname of the player is in use or not
         if(rooms[index].players.some(player => player.nickname === nickname)){
-          socket.emit('throwError', 200)
+          nsp.to(socket.id).emit('throwError', 200)
         } else {
           rooms[index].players.push(newPlayer)
           lobby = rooms[index]
@@ -141,10 +141,10 @@ nsp.on('connection', function(socket){
             rooms[index].isFull = true
           }
           // Returning a response with data of a lobby and a player
-          nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
+          nsp.to(room).emit('send-first-message', newPlayer, lobby,  status, rooms)
         }
       } else {
-        nsp.emit('throwError', 100)
+        nsp.to(socket.id).emit('throwError', 100)
       }
       // Checking if the user is trying to create the lobby or joining it 
     }else if(number !== null) {
@@ -210,9 +210,9 @@ nsp.on('connection', function(socket){
     status = "new"
     rooms.push(newRoom)
     socket.join(room)
-    nsp.emit('send-first-message', newPlayer, lobby,  status, rooms)
+    nsp.to(room).emit('send-first-message', newPlayer, lobby,  status, rooms)
     } else {
-      nsp.emit('throwError', 102)
+      nsp.to(socket.id).emit('throwError', 102)
     }
   })
   nsp.emit('allRooms', rooms)
