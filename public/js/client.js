@@ -81,13 +81,15 @@ socket.on('priestReady', card => {
 })
 
 // Baron
-// baron.addEventListener('click', () => {
-//     socket.emit('baron', room, lobbyObject.players[1])
-// })
+baron.addEventListener('click', () => {
+    socket.emit('baron', room, lobbyObject.players[1])
+})
 
-// socket.on('baronReady',(playerAttacking, playerAttacked, result) => {
-
-// } )
+socket.on('baronReady',(playerAttacking, playerAttacked, result) => {
+    console.log(playerAttacked)
+    console.log(playerAttacking)
+    alert(result)
+} )
 
 
 // Handmaid

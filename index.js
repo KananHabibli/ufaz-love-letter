@@ -262,11 +262,32 @@ nsp.on('connection', function(socket){
   })
 
   socket.on('handmaid', room => {
-    let lobby = findLobby(rooms, room)
+    let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
+    let card = findCard(player.cardsOnHand, "HandMaid")
     player.isProtected = true
+    player = discardedCard(player, card)
     nsp.to(socket.id).emit('handmaidReady', player)
   })
+
+  socket.on('baron', (room, playerAttacked) => {
+    let result
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    let otherCard = player.cardsOnHand.find(card => card.card !== "Baron")
+    if(otherCard.strength > playerAttacked.cardsOnHand[0].strength){
+      result = "Attacking player won"
+      playerAttacked.isOutOfRound = true
+      playerAttacking = discardCard(playerAttacked, playerAttacking.cardsOnHand[0])
+    } else {
+      result = "Attacked player won"
+      player.isOutOfRound = true
+      player = discardCard(player, otherCard)
+    }
+    let card = findCard(player.cardsOnHand, "Baron")
+    player = discardCard(player, card)
+    nsp.to(room).emit("baronReady", player, playerAttacked, result)
+  } )
 
   nsp.emit('allRooms', rooms)
   socket.on('getPlayers', lobbyName => {
