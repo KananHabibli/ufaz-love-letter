@@ -88,7 +88,14 @@ const Cards = require('./models/Cards')
 
 // Helper functions
 const { getUserRooms } = require('./utils/rooms')
-const { randomNumber, shuffleCards, discardCard, findCard } = require('./utils/utils')
+const { randomNumber,
+        shuffleCards,
+        discardCard,
+        findCardIndex,
+        findPlayerIndex,
+        findPlayerByID,
+        findLobby,
+        findCard } = require('./utils/utils')
 const errorMap = require('./utils/errorMap')
 
 // Main route
@@ -117,7 +124,7 @@ nsp.on('connection', function(socket){
     }
     let status
     // Looking for the lobby
-    let lobby = rooms.find(roomValue => roomValue.room == room)
+    let lobby = findLobby(rooms, room)
     // Checking whether the lobby to-be-created has already been created or not
     if(lobby && number !== null){
       nsp.to(socket.id).emit('throwError', 101)
@@ -217,30 +224,48 @@ nsp.on('connection', function(socket){
   })
 
 
-  socket.on('drawCard', (room, player, deck) => {
-    player.cardsOnHand.push(deck[0])
-    deck.splice(0,1)
-    nsp.to(room).emit('drawnCardReady', player, deck)
+  socket.on('drawCard', (room) => {
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    player.cardsOnHand.push(lobby.cards.gameCards[0])
+    lobby.cards.gameCards.splice(0, 1)
+    nsp.to(room).emit('drawnCardReady', player, lobby)
   })
 
-  socket.on('discardCard', (room, player, card) => {
-    player = discardCard(player, card)
+  socket.on('discardCard', (room, card) => {
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    // card   = findCard(player.cardsOnHand, card)
+    player = discardCard(player, player.cardsOnHand[0])
     nsp.to(room).emit('discardedCardReady', player)
   })
 
   socket.on('guard', (room, playerAttacking, guess, playerAttacked) => {
+    // If guess is right
+    let result
     if(playerAttacked.cardsOnHand[0].card === guess){
-      playerAttacked.isOutOfRound = true
-      let playerAttacked = discardCard(playerAttacked, playerAttacked.cardsOnHand[0])
-      let result = 'Guess is right'
+      // playerAttacked is out of round
+      playerAttacked.isOutOfRound = false
+      // playerAttacked's card discarded
+      playerAttacked = discardCard(playerAttacked, playerAttacked.cardsOnHand[0])
+      result = "Your guess is right"
     } else {
-      let result = 'Guess is wrong'
+      result = "Your guess is wrong"
     }
-    let discardingAttackingCard = findCard(playerAttacking, guess)
-    playerAttacking = discardCard(playerAttacking, discardingAttackingCard)
-    playerAttacking.hisTurn = false
-    let result = 'Guess is right'
-    nsp.to(room).emit('guardReady', playerAttacking, playerAttacked, result)
+    let card = findCard(playerAttacking.cardsOnHand, "Guard")
+    playerAttacking = discardCard(playerAttacking, card)
+    nsp.to(socket.id).emit('guardReady', playerAttacking, playerAttacked, result)
+  })
+
+  socket.on('priest', playerAttacked => {
+    nsp.to(socket.id).emit('priestReady', playerAttacked.cardsOnHand[0])
+  })
+
+  socket.on('handmaid', room => {
+    let lobby = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    player.isProtected = true
+    nsp.to(socket.id).emit('handmaidReady', player)
   })
 
   nsp.emit('allRooms', rooms)
