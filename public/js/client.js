@@ -75,11 +75,11 @@ socket.on('discardedCardReady', player => {
 
 // Guard
 guard.addEventListener('click', () => {
-    const guessCard = document.getElementById('guessCard').value
+    const guess = document.getElementById('guessCard').value
     console.log(`Your guess is ${guessCard}`)
-    socket.emit('guard', room, lobbyObject.players[0] , guessCard, lobbyObject.players[1])
+    socket.emit('guard', room , guess, lobbyObject.players[1])
 })
-socket.on('guardReady', (room, playerAttacked, result) => {
+socket.on('guardReady', (playerAttacking, playerAttacked, result) => {
     // playerObject = playerAttacking
     // room.players[1] = playerAttacked
     console.log('After guard: ')

@@ -120,7 +120,8 @@ nsp.on('connection', function(socket){
         hisTurn: false,
         isDoingMove: false,
         isOutOfRound: false,
-        isProtected: false
+        isProtected: false,
+        roundsWon: 0
     }
     let status
     // Looking for the lobby
@@ -261,7 +262,7 @@ nsp.on('connection', function(socket){
   socket.on('discardCard', (room, card) => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
-    let discardcard   = findCard(player.cardsOnHand, card)
+    let discardcard  = findCard(player.cardsOnHand, card)
     player = discardCard(player, discardcard)
     nsp.to(room).emit('discardedCardReady', player)
   })
@@ -272,6 +273,7 @@ nsp.on('connection', function(socket){
     let playerAttacking = findPlayerByID(lobby, socket.id)
     // If guess is right
     let result
+    console.log(playerAttacked)
     if(playerAttacked.cardsOnHand[0].card === guess){
       // playerAttacked is out of round
       playerAttacked.isOutOfRound = false
@@ -285,7 +287,7 @@ nsp.on('connection', function(socket){
     playerAttacking = discardCard(playerAttacking, card)
     playerAttacking.hisTurn = false
     // let index =  findPlayerIndex(playerAttacking.nickname, lobby.players)
-    // while(lobby.players)
+    // console.log(index)
     nsp.to(socket.id).emit('guardReady', playerAttacking, playerAttacked, result)
   })
 
