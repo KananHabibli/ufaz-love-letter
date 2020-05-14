@@ -225,12 +225,36 @@ nsp.on('connection', function(socket){
   })
 
 
-  socket.on('drawCard', (room) => {
+  socket.on('drawCard', room => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
-    player.cardsOnHand.push(lobby.cards.gameCards[0])
+    let cardDrawing = lobby.cards.gameCards[0]
+    player.cardsOnHand.push(cardDrawing)
     lobby.cards.gameCards.splice(0, 1)
+    if(player.cardsOnHand.length == 2){
+      if((cardDrawing.card === 'King' || cardDrawing.card === 'Prince') && player.cardsOnHand[0].card === 'Countess'){
+        player = discardCard(player, player.cardsOnHand[0])
+        player.hisTurn = false
+      }
+      if(cardDrawing.card === 'Countess' && (cardsOnHand[0].card === 'King' || cardsOnHand[0].card === 'Prince')){
+        player = discardCard(player, player.cardsOnHand[1])
+        player.hisTurn = false
+      }
+    }
     nsp.to(room).emit('drawnCardReady', player, lobby)
+  })
+
+  socket.on('drawAll', room => {
+    let lobby  = findLobby(rooms, room)
+    if(lobby.players.length == parseInt(lobby.numberOfPlayers)){
+      for(let i = 0; i <= lobby.players.length - 1; i++){
+        lobby.players[i].cardsOnHand.push(lobby.cards.gameCards[0])
+        lobby.cards.gameCards.splice(0, 1)
+      }
+      nsp.to(room).emit('drawAllReady', lobby)
+    } else {
+      nsp.to(room).emit('throwError', 103)
+    }
   })
 
 
@@ -260,8 +284,8 @@ nsp.on('connection', function(socket){
     let card = findCard(playerAttacking.cardsOnHand, "Guard")
     playerAttacking = discardCard(playerAttacking, card)
     playerAttacking.hisTurn = false
-    let index =  findPlayerIndex(playerAttacking.nickname, lobby.players)
-    while(lobby.players)
+    // let index =  findPlayerIndex(playerAttacking.nickname, lobby.players)
+    // while(lobby.players)
     nsp.to(socket.id).emit('guardReady', playerAttacking, playerAttacked, result)
   })
 

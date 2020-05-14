@@ -3,6 +3,7 @@ var socket = io('/game');
 // Elements
 const players  = document.getElementById('players')
 const drawCard = document.getElementById('drawCard')
+const drawAll = document.getElementById('drawAll')
 const discardCard = document.getElementById('discardCard')
 const guard = document.getElementById('guard')
 const priest = document.getElementById('priest')
@@ -45,6 +46,17 @@ socket.on('drawnCardReady', (player, lobby) => {
     console.log(player)
     console.log(lobby)
 })
+
+
+
+// Draw a card
+drawAll.addEventListener('click', () => {
+    socket.emit('drawAll',room)
+})
+socket.on('drawAllReady', lobby => {
+    console.log(lobby)
+})
+
 
 
 
