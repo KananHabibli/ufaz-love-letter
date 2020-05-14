@@ -232,6 +232,7 @@ nsp.on('connection', function(socket){
     nsp.to(room).emit('drawnCardReady', player, lobby)
   })
 
+
   socket.on('discardCard', (room, card) => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
@@ -239,6 +240,7 @@ nsp.on('connection', function(socket){
     player = discardCard(player, player.cardsOnHand[0])
     nsp.to(room).emit('discardedCardReady', player)
   })
+
 
   socket.on('guard', (room, playerAttacking, guess, playerAttacked) => {
     // If guess is right
@@ -257,9 +259,11 @@ nsp.on('connection', function(socket){
     nsp.to(socket.id).emit('guardReady', playerAttacking, playerAttacked, result)
   })
 
+
   socket.on('priest', playerAttacked => {
     nsp.to(socket.id).emit('priestReady', playerAttacked.cardsOnHand[0])
   })
+
 
   socket.on('handmaid', room => {
     let lobby  = findLobby(rooms, room)
@@ -270,6 +274,7 @@ nsp.on('connection', function(socket){
     nsp.to(socket.id).emit('handmaidReady', player)
   })
 
+
   socket.on('baron', (room, playerAttacked) => {
     let result
     let lobby  = findLobby(rooms, room)
@@ -278,7 +283,7 @@ nsp.on('connection', function(socket){
     if(otherCard.strength > playerAttacked.cardsOnHand[0].strength){
       result = "Attacking player won"
       playerAttacked.isOutOfRound = true
-      playerAttacking = discardCard(playerAttacked, playerAttacking.cardsOnHand[0])
+      playerAttacking = discardCard(playerAttacking, playerAttacking.cardsOnHand[0])
     } else {
       result = "Attacked player won"
       player.isOutOfRound = true
@@ -288,6 +293,35 @@ nsp.on('connection', function(socket){
     player = discardCard(player, card)
     nsp.to(room).emit("baronReady", player, playerAttacked, result)
   } )
+
+
+  socket.on('prince', (room, playerAttacked) => {
+    let lobby  = findLobby(rooms, room)
+    let cardDiscarding = playerAttacked.cardsOnHand[0]
+    playerAttacked = discardCard(playerAttacked, cardDiscarding)
+    let result
+    if(cardDiscarding.card === 'Princess'){
+      playerAttacked.isOutOfRound = true
+      result = `${playerAttacked.nickname} is out of round`
+    } else {
+      playerAttacked.cardsOnHand.push(lobby.cards.gameCards[0])
+      lobby.cards.gameCards.splice(0, 1)
+      result = `${playerAttacked.nickname} is still in this round`
+    }
+    nsp.to(room).emit('princeReady', cardDiscarding, playerAttacked, result)
+  })
+
+
+  socket.on('king', (room, playerAttacked) => {
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    let otherCard = player.cardsOnHand.find(card => card.card !== "King")
+    player.cardsOnHand[1] = playerAttacked.cardsOnHand[0]
+    playerAttacked.cardsOnHand[0] = otherCard
+    player = discardCard(player, findCard(player.cardsOnHand, "King"))
+    nsp.to(socket.id).to(playerAttacked.id).emit('kingReady', player, playerAttacked)
+  })
+
 
   nsp.emit('allRooms', rooms)
   socket.on('getPlayers', lobbyName => {

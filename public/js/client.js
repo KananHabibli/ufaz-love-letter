@@ -8,6 +8,11 @@ const guard = document.getElementById('guard')
 const priest = document.getElementById('priest')
 const baron = document.getElementById('baron')
 const handmaid = document.getElementById('handmaid')
+const prince = document.getElementById('prince')
+const king = document.getElementById('king')
+
+
+
 // Parsing the query string
 const { nickname, room, number } = Qs.parse(location.search, {ignoreQueryPrefix : true})
 
@@ -34,7 +39,6 @@ drawCard.addEventListener('click', () => {
     // let player = localStorage.getItem('player')
     socket.emit('drawCard',room, lobbyObject)
 })
-
 socket.on('drawnCardReady', (player, lobby) => {
     lobbyObject = lobby
     console.log("After drawCard: ")
@@ -42,17 +46,18 @@ socket.on('drawnCardReady', (player, lobby) => {
     console.log(lobby)
 })
 
-// Discard a card
 
+
+// Discard a card
 discardCard.addEventListener('click', () => {
     socket.emit('discardCard', lobbyObject.room)
 })
-
 socket.on('discardedCardReady', player => {
     playerObject = player
     console.log("After discardCard: ")
     console.log(playerObject)
 })
+
 
 
 // Guard
@@ -61,7 +66,6 @@ guard.addEventListener('click', () => {
     console.log(`Your guess is ${guessCard}`)
     socket.emit('guard', room, lobbyObject.players[0] , guessCard, lobbyObject.players[1])
 })
-
 socket.on('guardReady', (playerAttacking, playerAttacked, result) => {
     // playerObject = playerAttacking
     // room.players[1] = playerAttacked
@@ -71,20 +75,22 @@ socket.on('guardReady', (playerAttacking, playerAttacked, result) => {
     console.log(playerAttacked)
 })
 
+
+
 // Priest
 priest.addEventListener('click', () => {
     socket.emit('priest', lobbyObject.players[1])
 })
-
 socket.on('priestReady', card => {
     alert(card.card)
 })
+
+
 
 // Baron
 baron.addEventListener('click', () => {
     socket.emit('baron', room, lobbyObject.players[1])
 })
-
 socket.on('baronReady',(playerAttacking, playerAttacked, result) => {
     console.log(playerAttacked)
     console.log(playerAttacking)
@@ -92,15 +98,36 @@ socket.on('baronReady',(playerAttacking, playerAttacked, result) => {
 } )
 
 
+
 // Handmaid
 handmaid.addEventListener('click', () => {
     socket.emit('handmaid', room)
 })
-
 socket.on('handmaidReady', player => {
     alert(`${player.nickname} is protected`)
 })
 
+
+
+// Prince
+prince.addEventListener('click', () => {
+    socket.emit('prince', room, lobbyObject.players[1])
+})
+socket.on('princeReady', (card, playerAttacked, result) => {
+    alert(result)
+    console.log(`${playerAttacked.nickname}'s ${card.card} is discarded`)
+})
+
+
+
+// King
+king.addEventListener('click', () => {
+    socket.emit('king', room, lobbyObject.players[1])
+})
+socket.on('kingReady', (playerAttacking, playerAttacked) => {
+    console.log(playerAttacking)
+    console.log(playerAttacked)
+})
 
 socket.on('throwError', error => {
     alert(error)
