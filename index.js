@@ -372,7 +372,7 @@ nsp.on('connection', function(socket){
     for (let i = 0; i < player.cardsOnHand.length; i++) {
       player = discardCard(player, player.cardsOnHand[i])
     }
-    let result = 'This player is out of round because of discarding of Princess'
+    let result = `${player.nickname} is out of round because of discarding of Princess`
     player.isOutOfRound = true
     player.hisTurn = false
     nsp.to(room).emit('princessReady', player, result)
