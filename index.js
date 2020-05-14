@@ -355,6 +355,29 @@ nsp.on('connection', function(socket){
   })
 
 
+  socket.on('countess', room => {
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    let card = findCard(player.cardsOnHand, "Countess")
+    player = discardCard(player, card) 
+    player.hisTurn = false
+    // Next player's turn
+    nsp.to(room).emit('countessReady', player)
+  })
+
+
+  socket.on('princess', room => {
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    for (let i = 0; i < player.cardsOnHand.length; i++) {
+      player = discardCard(player, player.cardsOnHand[i])
+    }
+    let result = 'This player is out of round because of discarding of Princess'
+    player.isOutOfRound = true
+    player.hisTurn = false
+    nsp.to(room).emit('princessReady', player, result)
+  })
+
   nsp.emit('allRooms', rooms)
   socket.on('getPlayers', lobbyName => {
     const players = getUsersInRoom(lobbyName)

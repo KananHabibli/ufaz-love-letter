@@ -10,7 +10,8 @@ const priest = document.getElementById('priest')
 const baron = document.getElementById('baron')
 const handmaid = document.getElementById('handmaid')
 const prince = document.getElementById('prince')
-const king = document.getElementById('king')
+const countess = document.getElementById('countess')
+const princess = document.getElementById('princess')
 
 
 
@@ -141,6 +142,29 @@ socket.on('kingReady', (playerAttacking, playerAttacked) => {
     console.log(playerAttacking)
     console.log(playerAttacked)
 })
+
+
+
+// Countess
+countess.addEventListener('click', () => {
+    socket.emit('countess', room)
+})
+socket.on('countessReady', player => {
+    console.log(player)
+})
+
+
+
+// Princess
+princess.addEventListener('click', () => {
+    socket.emit('princess', room)
+})
+socket.on('princessReady', (player, result) => {
+    alert(result)
+    console.log(player)
+})
+
+
 
 socket.on('throwError', error => {
     alert(error)
