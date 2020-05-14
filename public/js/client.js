@@ -37,7 +37,7 @@ socket.on('send-first-message', ( newPlayer, lobby,  status, rooms ) => {
 // Draw a card
 drawCard.addEventListener('click', () => {
     // let player = localStorage.getItem('player')
-    socket.emit('drawCard',room, lobbyObject)
+    socket.emit('drawCard',room)
 })
 socket.on('drawnCardReady', (player, lobby) => {
     lobbyObject = lobby
@@ -50,7 +50,8 @@ socket.on('drawnCardReady', (player, lobby) => {
 
 // Discard a card
 discardCard.addEventListener('click', () => {
-    socket.emit('discardCard', lobbyObject.room)
+    const chooseDiscardCard = document.getElementById('chooseDiscardCard').value
+    socket.emit('discardCard', room, chooseDiscardCard)
 })
 socket.on('discardedCardReady', player => {
     playerObject = player
@@ -66,7 +67,7 @@ guard.addEventListener('click', () => {
     console.log(`Your guess is ${guessCard}`)
     socket.emit('guard', room, lobbyObject.players[0] , guessCard, lobbyObject.players[1])
 })
-socket.on('guardReady', (playerAttacking, playerAttacked, result) => {
+socket.on('guardReady', (room, playerAttacked, result) => {
     // playerObject = playerAttacking
     // room.players[1] = playerAttacked
     console.log('After guard: ')

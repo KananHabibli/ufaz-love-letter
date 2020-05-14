@@ -195,6 +195,7 @@ nsp.on('connection', function(socket){
               deck.splice(rand, 1)
           }
       }
+      newPlayer.hisTurn = true
       // Creating new lobby
       let newRoom = {
           room,
@@ -236,13 +237,15 @@ nsp.on('connection', function(socket){
   socket.on('discardCard', (room, card) => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
-    // card   = findCard(player.cardsOnHand, card)
-    player = discardCard(player, player.cardsOnHand[0])
+    let discardcard   = findCard(player.cardsOnHand, card)
+    player = discardCard(player, discardcard)
     nsp.to(room).emit('discardedCardReady', player)
   })
 
 
-  socket.on('guard', (room, playerAttacking, guess, playerAttacked) => {
+  socket.on('guard', (room, guess, playerAttacked) => {
+    let lobby  = findLobby(rooms, room)
+    let playerAttacking = findPlayerByID(lobby, socket.id)
     // If guess is right
     let result
     if(playerAttacked.cardsOnHand[0].card === guess){
@@ -256,6 +259,9 @@ nsp.on('connection', function(socket){
     }
     let card = findCard(playerAttacking.cardsOnHand, "Guard")
     playerAttacking = discardCard(playerAttacking, card)
+    playerAttacking.hisTurn = false
+    let index =  findPlayerIndex(playerAttacking.nickname, lobby.players)
+    while(lobby.players)
     nsp.to(socket.id).emit('guardReady', playerAttacking, playerAttacked, result)
   })
 
