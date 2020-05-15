@@ -5,7 +5,7 @@ var cors = require('cors')
 
 // socket.io
 const socketio = require('socket.io')
-const server = require('http').createServer(app)
+const server = require('https').createServer(app)
 const io = socketio(server)
 
 // Load keys
