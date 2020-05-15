@@ -120,6 +120,7 @@ io.on('connection', function(socket){
         isDoingMove: false,
         isOutOfRound: false,
         isProtected: false,
+        isOwner: false,
         roundsWon: 0
     }
     let status
@@ -196,6 +197,7 @@ io.on('connection', function(socket){
           }
       }
       newPlayer.hisTurn = true
+      newPlayer.isOwner = true
       // Creating new lobby
       let newRoom = {
           room,

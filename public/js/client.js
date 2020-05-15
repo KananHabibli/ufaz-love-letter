@@ -1,6 +1,6 @@
-var socket = io.connect("https://ufaz-love-letter.herokuapp.com/");
-// http://localhost:5000
-
+var socket = io.connect("http://localhost:5000/");
+// 
+// https://ufaz-love-letter.herokuapp.com
 
 // Elements
 const players     = document.getElementById('players')
