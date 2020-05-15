@@ -1,4 +1,4 @@
-var socket = io.connect("https://ufaz-love-letter.herokuapp.com");
+var socket = io();
 // 
 // https://ufaz-love-letter.herokuapp.com
 
