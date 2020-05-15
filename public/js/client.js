@@ -1,19 +1,19 @@
-var socket = io.connect("http://localhost:5000");
-// https://ufaz-love-letter.herokuapp.com/
+var socket = io.connect("https://ufaz-love-letter.herokuapp.com/");
+// http://localhost:5000
 
 
 // Elements
-const players  = document.getElementById('players')
-const drawCard = document.getElementById('drawCard')
-const drawAll = document.getElementById('drawAll')
+const players     = document.getElementById('players')
+const drawCard    = document.getElementById('drawCard')
+const drawAll     = document.getElementById('drawAll')
 const discardCard = document.getElementById('discardCard')
-const guard = document.getElementById('guard')
-const priest = document.getElementById('priest')
-const baron = document.getElementById('baron')
-const handmaid = document.getElementById('handmaid')
-const prince = document.getElementById('prince')
-const countess = document.getElementById('countess')
-const princess = document.getElementById('princess')
+const guard       = document.getElementById('guard')
+const priest      = document.getElementById('priest')
+const baron       = document.getElementById('baron')
+const handmaid    = document.getElementById('handmaid')
+const prince      = document.getElementById('prince')
+const countess    = document.getElementById('countess')
+const princess    = document.getElementById('princess')
 
 
 
