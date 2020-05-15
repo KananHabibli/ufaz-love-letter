@@ -94,7 +94,8 @@ const { randomNumber,
         findPlayerIndex,
         findPlayerByID,
         findLobby,
-        findCard } = require('./utils/utils')
+        findCard,
+        nextPlayer } = require('./utils/utils')
 const errorMap = require('./utils/errorMap')
 
 // Main route
@@ -272,24 +273,37 @@ io.on('connection', function(socket){
   socket.on('guard', (room, guess, playerAttacked) => {
     let lobby  = findLobby(rooms, room)
     let playerAttacking = findPlayerByID(lobby, socket.id)
+    let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
+    let playerAttackingIndex = findPlayerIndex(playerAttacking.nickname, lobby.players)
     // If guess is right
-    let result
-    console.log(playerAttacked)
+    let answer
     if(playerAttacked.cardsOnHand[0].card === guess){
       // playerAttacked is out of round
-      playerAttacked.isOutOfRound = false
+      lobby.players[playerAttackedIndex].isOutOfRound = true
       // playerAttacked's card discarded
-      playerAttacked = discardCard(playerAttacked, playerAttacked.cardsOnHand[0])
-      result = "Your guess is right"
+      lobby.players[playerAttackedIndex] = discardCard(lobby.players[playerAttackedIndex], playerAttacked.cardsOnHand[0])
+      answer = "Your guess is right"
     } else {
-      result = "Your guess is wrong"
+      answer = "Your guess is wrong"
     }
     let card = findCard(playerAttacking.cardsOnHand, "Guard")
-    playerAttacking = discardCard(playerAttacking, card)
-    playerAttacking.hisTurn = false
-    // let index =  findPlayerIndex(playerAttacking.nickname, lobby.players)
-    // console.log(index)
-    io.to(socket.id).emit('guardReady', playerAttacking, playerAttacked, result)
+    lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], card)
+    lobby.players[playerAttackingIndex].hisTurn = false
+    let {nextIndex, result} = nextPlayer(lobby.players, playerAttacking)
+    console.log(nextIndex)
+    console.log(result)
+    if(result == "Round is on"){
+      lobby.players[nextIndex].hisTurn = true
+      io.to(socket.id).emit('guardReady', lobby)
+    } else{
+      lobby.players[nextIndex].roundsWon++
+      if(lobby.players[nextIndex].roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+      } else {
+        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+      }
+    }
+    
   })
 
 

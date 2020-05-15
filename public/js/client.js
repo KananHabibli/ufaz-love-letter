@@ -166,7 +166,17 @@ socket.on('princessReady', (player, result) => {
     console.log(player)
 })
 
+// Round is over
+socket.on('roundOver', (lobby, roundWinner) => {
+    alert(`${roundWinner.nickname} won the round`)
+    console.log(lobby)
+} )
 
+// Game is over
+socket.on('gameOver', (lobby, gameWinner) => {
+    alert(`${gameWinner.nickname} won the game`)
+    console.log(lobby)
+} )
 
 socket.on('throwError', error => {
     alert(error)
