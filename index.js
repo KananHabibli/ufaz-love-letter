@@ -236,7 +236,7 @@ io.on('connection', function(socket){
         player = discardCard(player, player.cardsOnHand[0])
         player.hisTurn = false
       }
-      if(cardDrawing.card === 'Countess' && (cardsOnHand[0].card === 'King' || cardsOnHand[0].card === 'Prince')){
+      if(cardDrawing.card === 'Countess' && (player.cardsOnHand[0].card === 'King' || player.cardsOnHand[0].card === 'Prince')){
         player = discardCard(player, player.cardsOnHand[1])
         player.hisTurn = false
       }
