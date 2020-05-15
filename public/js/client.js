@@ -1,4 +1,4 @@
-var socket = io('/game');
+var socket = io();
 
 // Elements
 const players  = document.getElementById('players')

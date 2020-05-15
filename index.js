@@ -7,7 +7,6 @@ var cors = require('cors')
 const socketio = require('socket.io')
 const server = require('http').createServer(app)
 const io = socketio(server)
-const nsp = io.of('/game')
 
 // Load keys
 const keys = require('./config/keys')
@@ -107,7 +106,7 @@ app.get('/',function(req,res) {
 let rooms = []
 
 // TCP connection
-nsp.on('connection', function(socket){
+io.on('connection', function(socket){
   console.log('a user connected', socket.id);
   // Adding player to the lobby
   socket.on('new-user', async (room, nickname, number) => {
@@ -128,7 +127,7 @@ nsp.on('connection', function(socket){
     let lobby = findLobby(rooms, room)
     // Checking whether the lobby to-be-created has already been created or not
     if(lobby && number !== null){
-      nsp.to(socket.id).emit('throwError', 101)
+      io.to(socket.id).emit('throwError', 101)
       return
     }
     // Checking if lobby exist or not
@@ -138,7 +137,7 @@ nsp.on('connection', function(socket){
       if(rooms[index].isFull == false){
         // Checking if the nickname of the player is in use or not
         if(rooms[index].players.some(player => player.nickname === nickname)){
-          nsp.to(socket.id).emit('throwError', 200)
+          io.to(socket.id).emit('throwError', 200)
         } else {
           rooms[index].players.push(newPlayer)
           lobby = rooms[index]
@@ -149,10 +148,10 @@ nsp.on('connection', function(socket){
             rooms[index].isFull = true
           }
           // Returning a response with data of a lobby and a player
-          nsp.to(room).emit('send-first-message', newPlayer, lobby,  status, rooms)
+          io.to(room).emit('send-first-message', newPlayer, lobby,  status, rooms)
         }
       } else {
-        nsp.to(socket.id).emit('throwError', 100)
+        io.to(socket.id).emit('throwError', 100)
       }
       // Checking if the user is trying to create the lobby or joining it 
     }else if(number !== null) {
@@ -219,9 +218,9 @@ nsp.on('connection', function(socket){
     status = "new"
     rooms.push(newRoom)
     socket.join(room)
-    nsp.to(room).emit('send-first-message', newPlayer, lobby,  status, rooms)
+    io.to(room).emit('send-first-message', newPlayer, lobby,  status, rooms)
     } else {
-      nsp.to(socket.id).emit('throwError', 102)
+      io.to(socket.id).emit('throwError', 102)
     }
   })
 
@@ -242,7 +241,7 @@ nsp.on('connection', function(socket){
         player.hisTurn = false
       }
     }
-    nsp.to(room).emit('drawnCardReady', player, lobby)
+    io.to(room).emit('drawnCardReady', player, lobby)
   })
 
   socket.on('drawAll', room => {
@@ -252,9 +251,9 @@ nsp.on('connection', function(socket){
         lobby.players[i].cardsOnHand.push(lobby.cards.gameCards[0])
         lobby.cards.gameCards.splice(0, 1)
       }
-      nsp.to(room).emit('drawAllReady', lobby)
+      io.to(room).emit('drawAllReady', lobby)
     } else {
-      nsp.to(room).emit('throwError', 103)
+      io.to(room).emit('throwError', 103)
     }
   })
 
@@ -264,7 +263,7 @@ nsp.on('connection', function(socket){
     let player = findPlayerByID(lobby, socket.id)
     let discardcard  = findCard(player.cardsOnHand, card)
     player = discardCard(player, discardcard)
-    nsp.to(room).emit('discardedCardReady', player)
+    io.to(room).emit('discardedCardReady', player)
   })
 
 
@@ -288,12 +287,12 @@ nsp.on('connection', function(socket){
     playerAttacking.hisTurn = false
     // let index =  findPlayerIndex(playerAttacking.nickname, lobby.players)
     // console.log(index)
-    nsp.to(socket.id).emit('guardReady', playerAttacking, playerAttacked, result)
+    io.to(socket.id).emit('guardReady', playerAttacking, playerAttacked, result)
   })
 
 
   socket.on('priest', playerAttacked => {
-    nsp.to(socket.id).emit('priestReady', playerAttacked.cardsOnHand[0])
+    io.to(socket.id).emit('priestReady', playerAttacked.cardsOnHand[0])
   })
 
 
@@ -303,7 +302,7 @@ nsp.on('connection', function(socket){
     let card = findCard(player.cardsOnHand, "HandMaid")
     player.isProtected = true
     player = discardedCard(player, card)
-    nsp.to(socket.id).emit('handmaidReady', player)
+    io.to(socket.id).emit('handmaidReady', player)
   })
 
 
@@ -323,7 +322,7 @@ nsp.on('connection', function(socket){
     }
     let card = findCard(player.cardsOnHand, "Baron")
     player = discardCard(player, card)
-    nsp.to(room).emit("baronReady", player, playerAttacked, result)
+    io.to(room).emit("baronReady", player, playerAttacked, result)
   } )
 
 
@@ -340,7 +339,7 @@ nsp.on('connection', function(socket){
       lobby.cards.gameCards.splice(0, 1)
       result = `${playerAttacked.nickname} is still in this round`
     }
-    nsp.to(room).emit('princeReady', cardDiscarding, playerAttacked, result)
+    io.to(room).emit('princeReady', cardDiscarding, playerAttacked, result)
   })
 
 
@@ -351,7 +350,7 @@ nsp.on('connection', function(socket){
     player.cardsOnHand[1] = playerAttacked.cardsOnHand[0]
     playerAttacked.cardsOnHand[0] = otherCard
     player = discardCard(player, findCard(player.cardsOnHand, "King"))
-    nsp.to(socket.id).to(playerAttacked.id).emit('kingReady', player, playerAttacked)
+    io.to(socket.id).to(playerAttacked.id).emit('kingReady', player, playerAttacked)
   })
 
 
@@ -362,7 +361,7 @@ nsp.on('connection', function(socket){
     player = discardCard(player, card) 
     player.hisTurn = false
     // Next player's turn
-    nsp.to(room).emit('countessReady', player)
+    io.to(room).emit('countessReady', player)
   })
 
 
@@ -375,13 +374,13 @@ nsp.on('connection', function(socket){
     let result = `${player.nickname} is out of round because of discarding of Princess`
     player.isOutOfRound = true
     player.hisTurn = false
-    nsp.to(room).emit('princessReady', player, result)
+    io.to(room).emit('princessReady', player, result)
   })
 
-  nsp.emit('allRooms', rooms)
+  io.emit('allRooms', rooms)
   socket.on('getPlayers', lobbyName => {
     const players = getUsersInRoom(lobbyName)
-    nsp.emit('players', players)
+    io.emit('players', players)
   })
 
  
