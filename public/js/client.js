@@ -1,4 +1,4 @@
-var socket = io();
+var socket = io.connect("http://ufaz-love-letter.herokuapp.com/", {transports:['websocket']});
 
 // Elements
 const players  = document.getElementById('players')
