@@ -99,9 +99,9 @@ const { randomNumber,
 const errorMap = require('./utils/errorMap')
 
 // Main route
-app.get('/',function(req,res) {
-  res.sendFile('index.html');
-});
+// app.get('/',function(req,res) {
+//   res.sendFile('index.html');
+// });
 
 // Global variable to hold all the lobbies
 let rooms = []
