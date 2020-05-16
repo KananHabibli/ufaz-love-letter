@@ -1,7 +1,6 @@
 // Express Server
 const express = require('express')
 const app = express()
-var cors = require('cors')
 
 // socket.io
 const socketio = require('socket.io')
@@ -54,9 +53,7 @@ app.use((req, res, next) => {
   next()
 })
 
-const port = process.env.PORT || 5000;
-
-app.use(cors()) 
+const port = process.env.PORT || 5000
 
 const morgan = require('morgan')
 const fs = require('fs')
@@ -99,9 +96,9 @@ const { randomNumber,
 const errorMap = require('./utils/errorMap')
 
 // Main route
-// app.get('/',function(req,res) {
-//   res.sendFile('index.html');
-// });
+app.get('/',function(req,res) {
+  res.sendFile('index.html');
+});
 
 // Global variable to hold all the lobbies
 let rooms = []
