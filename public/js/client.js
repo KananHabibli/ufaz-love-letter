@@ -20,7 +20,7 @@ const princess    = document.getElementById('princess')
 // Parsing the query string
 const { nickname, room, number } = Qs.parse(location.search, {ignoreQueryPrefix : true})
 
-console.log(number)
+// console.log(number)
 
 socket.emit('new-user', room, nickname, number)
 
@@ -79,25 +79,23 @@ socket.on('discardedCardReady', player => {
 // Guard
 guard.addEventListener('click', () => {
     const guess = document.getElementById('guessCard').value
-    console.log(`Your guess is ${guessCard}`)
+    console.log(`Your guess is ${guess}`)
     socket.emit('guard', room , guess, lobbyObject.players[1])
 })
-socket.on('guardReady', (playerAttacking, playerAttacked, result) => {
-    // playerObject = playerAttacking
-    // room.players[1] = playerAttacked
+socket.on('guardReady', lobby => {
     console.log('After guard: ')
-    alert(result)
-    console.log(playerAttacking)
-    console.log(playerAttacked)
+    console.log(lobby)
 })
 
 
 
 // Priest
 priest.addEventListener('click', () => {
-    socket.emit('priest', lobbyObject.players[1])
+    socket.emit('priest',room, lobbyObject.players[1])
 })
-socket.on('priestReady', card => {
+socket.on('priestReady', (lobby, card) => {
+    console.log('After priest: ')
+    console.log(lobby)
     alert(card.card)
 })
 
@@ -107,10 +105,10 @@ socket.on('priestReady', card => {
 baron.addEventListener('click', () => {
     socket.emit('baron', room, lobbyObject.players[1])
 })
-socket.on('baronReady',(playerAttacking, playerAttacked, result) => {
-    console.log(playerAttacked)
-    console.log(playerAttacking)
-    alert(result)
+socket.on('baronReady',(lobby, answer) => {
+    console.log("After baron")
+    console.log(lobby)
+    alert(answer)
 } )
 
 
@@ -119,8 +117,9 @@ socket.on('baronReady',(playerAttacking, playerAttacked, result) => {
 handmaid.addEventListener('click', () => {
     socket.emit('handmaid', room)
 })
-socket.on('handmaidReady', player => {
-    alert(`${player.nickname} is protected`)
+socket.on('handmaidReady', lobby => {
+    console.log("After handmaid: ")
+    console.log(lobby)
 })
 
 
@@ -129,9 +128,10 @@ socket.on('handmaidReady', player => {
 prince.addEventListener('click', () => {
     socket.emit('prince', room, lobbyObject.players[1])
 })
-socket.on('princeReady', (card, playerAttacked, result) => {
+socket.on('princeReady', (lobby, result) => {
+    console.log('After prince: ')
+    console.log(lobby)
     alert(result)
-    console.log(`${playerAttacked.nickname}'s ${card.card} is discarded`)
 })
 
 
@@ -140,9 +140,9 @@ socket.on('princeReady', (card, playerAttacked, result) => {
 king.addEventListener('click', () => {
     socket.emit('king', room, lobbyObject.players[1])
 })
-socket.on('kingReady', (playerAttacking, playerAttacked) => {
-    console.log(playerAttacking)
-    console.log(playerAttacked)
+socket.on('kingReady', lobby => {
+    console.log("After king: ")
+    console.log(lobby)
 })
 
 
@@ -151,8 +151,9 @@ socket.on('kingReady', (playerAttacking, playerAttacked) => {
 countess.addEventListener('click', () => {
     socket.emit('countess', room)
 })
-socket.on('countessReady', player => {
-    console.log(player)
+socket.on('countessReady', lobby => {
+    console.log("After countess: ")
+    console.log(lobby)
 })
 
 
@@ -161,23 +162,23 @@ socket.on('countessReady', player => {
 princess.addEventListener('click', () => {
     socket.emit('princess', room)
 })
-socket.on('princessReady', (player, result) => {
-    alert(result)
-    console.log(player)
+socket.on('princessReady', (lobby, answer) => {
+    console.log(lobby)
+    alert(answer)
 })
 
 // Round is over
 socket.on('roundOver', (lobby, roundWinner) => {
-    alert(`${roundWinner.nickname} won the round`)
     console.log(lobby)
+    alert(`${roundWinner.nickname} won the round`)
+    
 } )
 
 // Game is over
 socket.on('gameOver', (lobby, gameWinner) => {
-    alert(`${gameWinner.nickname} won the game`)
     console.log(lobby)
-} )
-
+    alert(`${gameWinner.nickname} won the game`)
+})
 socket.on('throwError', error => {
     alert(error)
 })

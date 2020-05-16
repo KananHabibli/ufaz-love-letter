@@ -307,90 +307,204 @@ io.on('connection', function(socket){
   })
 
 
-  socket.on('priest', playerAttacked => {
-    io.to(socket.id).emit('priestReady', playerAttacked.cardsOnHand[0])
+  socket.on('priest', (room, playerAttacked) => {
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    let index  = findPlayerIndex(player.nickname, lobby.players)
+    let card = findCard(player.cardsOnHand, "Priest")
+    lobby.players[index] = discardCard(lobby.players[index], card)
+    lobby.players[index].hisTurn = false
+    let {nextIndex, result} = nextPlayer(lobby.players, lobby.players[index])
+    console.log(nextIndex)
+    console.log(result)
+    if(result == "Round is on"){
+      lobby.players[nextIndex].hisTurn = true
+      io.to(socket.id).emit('priestReady', lobby, playerAttacked.cardsOnHand[0])
+    } else{
+      lobby.players[nextIndex].roundsWon++
+      if(lobby.players[nextIndex].roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+      } else {
+        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+      }
+    }
   })
+
+
+
+  socket.on('baron', (room, playerAttacked) => {
+    let answer
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, socket.id)
+    let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
+    let playerAttackingIndex = findPlayerIndex(player.nickname, lobby.players)
+    let otherCard = player.cardsOnHand.find(card => card.card !== "Baron")
+    if(otherCard.strength > playerAttacked.cardsOnHand[0].strength){
+      answer = "Attacking player won"
+      lobby.players[playerAttackedIndex].isOutOfRound = true
+      lobby.players[playerAttackedIndex] = discardCard(lobby.players[playerAttackedIndex], playerAttacked.cardsOnHand[0])
+    } else {
+      answer = "Attacked player won"
+      lobby.players[playerAttackingIndex].isOutOfRound = true
+      lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], otherCard)
+    }
+    let card = findCard(player.cardsOnHand, "Baron")
+    lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], card)
+    lobby.players[playerAttackingIndex].hisTurn = false
+    let {nextIndex, result} = nextPlayer(lobby.players, player)
+    console.log(nextIndex)
+    console.log(result)
+    if(result == "Round is on"){
+      lobby.players[nextIndex].hisTurn = true
+      io.to(room).emit("baronReady", lobby, answer)
+    } else{
+      lobby.players[nextIndex].roundsWon++
+      if(lobby.players[nextIndex].roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+      } else {
+        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+      }
+    }
+  } )
 
 
   socket.on('handmaid', room => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
-    let card = findCard(player.cardsOnHand, "HandMaid")
-    player.isProtected = true
-    player = discardedCard(player, card)
-    io.to(socket.id).emit('handmaidReady', player)
+    let index  = findPlayerIndex(player.nickname, lobby.players)
+    let card   = findCard(player.cardsOnHand, "Handmaid")
+    lobby.players[index].isProtected = true
+    lobby.players[index] = discardCard(lobby.players[index], card)
+    lobby.players[index].hisTurn = false
+    let {nextIndex, result} = nextPlayer(lobby.players, player)
+    console.log(nextIndex)
+    console.log(result)
+    if(result == "Round is on"){
+      lobby.players[nextIndex].hisTurn = true
+      io.to(room).emit('handmaidReady', lobby)
+    } else{
+      lobby.players[nextIndex].roundsWon++
+      if(lobby.players[nextIndex].roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+      } else {
+        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+      }
+    }
   })
 
-
-  socket.on('baron', (room, playerAttacked) => {
-    let result
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let otherCard = player.cardsOnHand.find(card => card.card !== "Baron")
-    if(otherCard.strength > playerAttacked.cardsOnHand[0].strength){
-      result = "Attacking player won"
-      playerAttacked.isOutOfRound = true
-      playerAttacking = discardCard(playerAttacking, playerAttacking.cardsOnHand[0])
-    } else {
-      result = "Attacked player won"
-      player.isOutOfRound = true
-      player = discardCard(player, otherCard)
-    }
-    let card = findCard(player.cardsOnHand, "Baron")
-    player = discardCard(player, card)
-    io.to(room).emit("baronReady", player, playerAttacked, result)
-  } )
 
 
   socket.on('prince', (room, playerAttacked) => {
     let lobby  = findLobby(rooms, room)
-    let cardDiscarding = playerAttacked.cardsOnHand[0]
-    playerAttacked = discardCard(playerAttacked, cardDiscarding)
-    let result
-    if(cardDiscarding.card === 'Princess'){
-      playerAttacked.isOutOfRound = true
-      result = `${playerAttacked.nickname} is out of round`
+    let player = findPlayerByID(lobby, socket.id)
+    let playerAttackingIndex  = findPlayerIndex(player.nickname, lobby.players)
+    let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
+    let discardingCard = playerAttacked.cardsOnHand[0]
+    lobby.players[playerAttackedIndex] = discardCard(playerAttacked, discardingCard)
+    let answer
+    if(discardingCard.card === 'Princess'){
+      lobby.players[playerAttackedIndex].isOutOfRound = true
+      answer = `${playerAttacked.nickname} is out of round`
     } else {
-      playerAttacked.cardsOnHand.push(lobby.cards.gameCards[0])
-      lobby.cards.gameCards.splice(0, 1)
-      result = `${playerAttacked.nickname} is still in this round`
+      if(lobby.cards.gameCards.length != 0){
+        lobby.players[playerAttackedIndex].cardsOnHand.push(lobby.cards.gameCards[0])
+        lobby.cards.gameCards.splice(0, 1)
+      } else {
+        lobby.players[playerAttackedIndex].cardsOnHand.push(lobby.cards.discardedCards[0])
+        lobby.cards.discardedCards.splice(0, 1)
+      }
+      answer = `${playerAttacked.nickname} is still in this round`
     }
-    io.to(room).emit('princeReady', cardDiscarding, playerAttacked, result)
+    let card = findCard(player.cardsOnHand, "Prince")
+    lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], card)
+    lobby.players[playerAttackingIndex].hisTurn = false
+    let {nextIndex, result} = nextPlayer(lobby.players, player)
+    if(result == "Round is on"){
+      lobby.players[nextIndex].hisTurn = true
+      io.to(room).emit('princeReady', lobby, answer)
+    } else{
+      lobby.players[nextIndex].roundsWon++
+      if(lobby.players[nextIndex].roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+      } else {
+        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+      }
+    }
   })
 
 
   socket.on('king', (room, playerAttacked) => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
+    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
     let otherCard = player.cardsOnHand.find(card => card.card !== "King")
-    player.cardsOnHand[1] = playerAttacked.cardsOnHand[0]
-    playerAttacked.cardsOnHand[0] = otherCard
-    player = discardCard(player, findCard(player.cardsOnHand, "King"))
-    io.to(socket.id).to(playerAttacked.id).emit('kingReady', player, playerAttacked)
+    let otherCardIndex = findCardIndex(player.cardsOnHand, otherCard.card)
+    let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
+    console.log(`Index: ${otherCardIndex}`)
+    console.log(`Other card: ${otherCard}`)
+    player.cardsOnHand[otherCardIndex] = lobby.players[playerAttackedIndex].cardsOnHand[0]
+    lobby.players[playerAttackedIndex].cardsOnHand[0] = otherCard
+    lobby.players[playerIndex] = discardCard(player, findCard(player.cardsOnHand, "King"))
+    lobby.players[playerIndex].hisTurn = false
+    let {nextIndex, result} = nextPlayer(lobby.players, player)
+    if(result == "Round is on"){
+      lobby.players[nextIndex].hisTurn = true
+      io.to(socket.id).to(playerAttacked.id).emit('kingReady', lobby)
+    } else{
+      lobby.players[nextIndex].roundsWon++
+      if(lobby.players[nextIndex].roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+      } else {
+        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+      }
+    }
   })
 
 
   socket.on('countess', room => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
+    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
     let card = findCard(player.cardsOnHand, "Countess")
-    player = discardCard(player, card) 
-    player.hisTurn = false
-    // Next player's turn
-    io.to(room).emit('countessReady', player)
+    lobby.players[playerIndex] = discardCard(player, card) 
+    lobby.players[playerIndex].hisTurn = false
+    let {nextIndex, result} = nextPlayer(lobby.players, player)
+    if(result == "Round is on"){
+      lobby.players[nextIndex].hisTurn = true
+      io.to(room).emit('countessReady', lobby)
+    } else{
+      lobby.players[nextIndex].roundsWon++
+      if(lobby.players[nextIndex].roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+      } else {
+        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+      }
+    }
   })
 
 
   socket.on('princess', room => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
+    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
     for (let i = 0; i < player.cardsOnHand.length; i++) {
       player = discardCard(player, player.cardsOnHand[i])
     }
-    let result = `${player.nickname} is out of round because of discarding of Princess`
-    player.isOutOfRound = true
-    player.hisTurn = false
-    io.to(room).emit('princessReady', player, result)
+    let answer = `${player.nickname} is out of round because of discarding of Princess`
+    lobby.players[playerIndex].isOutOfRound = true
+    lobby.players[playerIndex].hisTurn = false
+    let {nextIndex, result} = nextPlayer(lobby.players, player)
+    if(result == "Round is on"){
+      lobby.players[nextIndex].hisTurn = true
+      io.to(room).emit('princessReady', lobby, answer)
+    } else{
+      lobby.players[nextIndex].roundsWon++
+      if(lobby.players[nextIndex].roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+      } else {
+        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+      }
+    }
   })
 
   io.emit('allRooms', rooms)

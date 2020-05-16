@@ -37,12 +37,12 @@ const discardCard = (player, card) => {
 const nextPlayer = (players, currentPlayer) => {
     let size = players.length - 1
     let currentIndex = findPlayerIndex(currentPlayer.nickname, players)
-    let index = currentIndex
+    let index = currentIndex + 1
     while(size > 0){
-        if(players[index + 1].isOutOfRound === false){
-            players[index + 1].hisTurn = true
+        if(players[index].isOutOfRound === false){
+            players[index].hisTurn = true
             return {
-                nextIndex: index+1,
+                nextIndex: index,
                 result: "Round is on"
             }
         } else {
