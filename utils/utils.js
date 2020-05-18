@@ -28,6 +28,18 @@ const findPlayerByName = (lobby, nickname) => lobby.players.find(player => playe
 
 const findLobby        = (rooms, room) => rooms.find(roomValue => roomValue.room == room)
 
+const findCredentials = (rooms, room, id) => {
+    let lobby  = findLobby(rooms, room)
+    let player = findPlayerByID(lobby, id)
+    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
+    return {
+        lobby,
+        player,
+        playerIndex
+    }
+}
+
+
 const discardCard = (player, card) => {
     player.cardsDiscarded.push(card)
     player.cardsOnHand.splice(findCardIndex(player.cardsOnHand, card.card), 1)
@@ -80,6 +92,7 @@ module.exports = {
     findPlayerByName,
     findLobby,
     findCard,
+    findCredentials,
     nextPlayer,
     roundWinner
 }

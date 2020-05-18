@@ -92,6 +92,7 @@ const { randomNumber,
         findPlayerByID,
         findLobby,
         findCard,
+        findCredentials,
         nextPlayer,
         roundWinner } = require('./utils/utils')
 const errorMap = require('./utils/errorMap')
@@ -227,9 +228,7 @@ io.on('connection', function(socket){
 
 
   socket.on('drawCard', room => {
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
+    let {lobby, player, playerIndex} = findCredentials(rooms, room, socket.id)
     if(lobby.cards.gameCards.length == 0){
       let {lobby: roundLobby, winner: roundWinnerPlayer} = roundWinner(lobby)
       if(roundWinnerPlayer.roundsWon == lobby.goal){
@@ -270,9 +269,7 @@ io.on('connection', function(socket){
 
 
   socket.on('discardCard', (room, card) => {
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
+    let {lobby, player, playerIndex} = findCredentials(rooms, room, socket.id)
     let discardcard  = findCard(player.cardsOnHand, card)
     lobby.players[playerIndex] = discardCard(player, discardcard)
     io.to(room).emit('discardedCardReady', lobby)
@@ -280,10 +277,11 @@ io.on('connection', function(socket){
 
 
   socket.on('guard', (room, guess, playerAttacked) => {
-    let lobby  = findLobby(rooms, room)
-    let playerAttacking = findPlayerByID(lobby, socket.id)
+    let {lobby, player: playerAttacking, playerIndex: playerAttackingIndex} = findCredentials(rooms, room, socket.id)
+    // let lobby  = findLobby(rooms, room)
+    // let playerAttacking = findPlayerByID(lobby, socket.id)
     let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
-    let playerAttackingIndex = findPlayerIndex(playerAttacking.nickname, lobby.players)
+    // let playerAttackingIndex = findPlayerIndex(playerAttacking.nickname, lobby.players)
     // If guess is right
     let answer
     if(playerAttacked.cardsOnHand[0].card === guess){
@@ -317,9 +315,7 @@ io.on('connection', function(socket){
 
 
   socket.on('priest', (room, playerAttacked) => {
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let index  = findPlayerIndex(player.nickname, lobby.players)
+    let {lobby, player, playerIndex: index} = findCredentials(rooms, room, socket.id)
     let card = findCard(player.cardsOnHand, "Priest")
     lobby.players[index] = discardCard(lobby.players[index], card)
     lobby.players[index].hisTurn = false
@@ -343,10 +339,8 @@ io.on('connection', function(socket){
 
   socket.on('baron', (room, playerAttacked) => {
     let answer
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
+    let {lobby, player, playerIndex: playerAttackingIndex} = findCredentials(rooms, room, socket.id)
     let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
-    let playerAttackingIndex = findPlayerIndex(player.nickname, lobby.players)
     let otherCard = player.cardsOnHand.find(card => card.card !== "Baron")
     if(otherCard.strength > playerAttacked.cardsOnHand[0].strength){
       answer = "Attacking player won"
@@ -378,9 +372,7 @@ io.on('connection', function(socket){
 
 
   socket.on('handmaid', room => {
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let index  = findPlayerIndex(player.nickname, lobby.players)
+    let {lobby, player, playerIndex: index} = findCredentials(rooms, room, socket.id)
     let card   = findCard(player.cardsOnHand, "Handmaid")
     lobby.players[index].isProtected = true
     lobby.players[index] = discardCard(lobby.players[index], card)
@@ -404,9 +396,7 @@ io.on('connection', function(socket){
 
 
   socket.on('prince', (room, playerAttacked) => {
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let playerAttackingIndex  = findPlayerIndex(player.nickname, lobby.players)
+    let {lobby, player, playerIndex: playerAttackingIndex} = findCredentials(rooms, room, socket.id)
     let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
     let discardingCard = playerAttacked.cardsOnHand[0]
     lobby.players[playerAttackedIndex] = discardCard(playerAttacked, discardingCard)
@@ -443,9 +433,7 @@ io.on('connection', function(socket){
 
 
   socket.on('king', (room, playerAttacked) => {
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
+    let {lobby, player, playerIndex} = findCredentials(rooms, room, socket.id)
     let otherCard = player.cardsOnHand.find(card => card.card !== "King")
     let otherCardIndex = findCardIndex(player.cardsOnHand, otherCard.card)
     let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
@@ -471,9 +459,7 @@ io.on('connection', function(socket){
 
 
   socket.on('countess', room => {
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
+    let {lobby, player, playerIndex} = findCredentials(rooms, room, socket.id)
     let card = findCard(player.cardsOnHand, "Countess")
     lobby.players[playerIndex] = discardCard(player, card) 
     lobby.players[playerIndex].hisTurn = false
@@ -493,9 +479,7 @@ io.on('connection', function(socket){
 
 
   socket.on('princess', room => {
-    let lobby  = findLobby(rooms, room)
-    let player = findPlayerByID(lobby, socket.id)
-    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
+    let {lobby, player, playerIndex} = findCredentials(rooms, room, socket.id)
     for (let i = 0; i < player.cardsOnHand.length; i++) {
       player = discardCard(player, player.cardsOnHand[i])
     }
