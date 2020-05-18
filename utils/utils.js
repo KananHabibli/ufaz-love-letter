@@ -81,9 +81,9 @@ const roundWinner = lobby => {
     let winnerIndex = findPlayerIndex(playersInRound[0].nickname, lobby.players)
     let previousOwner = findOwner(lobby.players)
     let previousOwnerIndex = findPlayerIndex(previousOwner.nickname, lobby.players)
+    lobby.players[previousOwnerIndex].isOwner = false
     lobby.players[winnerIndex].roundsWon++
     lobby.players[winnerIndex].isOwner = true
-    lobby.players[previousOwnerIndex].isOwner = false
     return {
         lobby,
         winner: lobby.players[winnerIndex]
@@ -112,9 +112,9 @@ const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
     } else{
         let previousOwner = findOwner(lobby.players)
         let previousOwnerIndex = findPlayerIndex(previousOwner.nickname, lobby.players)
+        lobby.players[previousOwnerIndex].isOwner = false
         lobby.players[nextIndex].roundsWon++
         lobby.players[nextIndex].isOwner = true
-        lobby.players[previousOwnerIndex].isOwner = false
         if(lobby.players[nextIndex].roundsWon == lobby.goal){
             return {
                 lobbyCondition: lobby,

@@ -277,6 +277,7 @@ io.on('connection', function(socket){
     let discardcard  = findCard(player.cardsOnHand, card)
 
     lobby.players[playerIndex] = discardCard(player, discardcard)
+    socket.join(room)
     io.to(room).emit('discardedCardReady', lobby)
   })
 
@@ -301,6 +302,7 @@ io.on('connection', function(socket){
 
     let {nextIndex, result} = nextPlayer(lobby.players, playerAttacking)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'guard')
+    socket.join(room)
     io.to(toWho).emit(event, lobbyCondition)
     
   })
@@ -315,6 +317,7 @@ io.on('connection', function(socket){
 
     let {nextIndex, result} = nextPlayer(lobby.players, lobby.players[index])
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'priest')
+    socket.join(room)
     io.to(toWho).emit(event, lobbyCondition, playerAttacked.cardsOnHand[0])
   })
 
@@ -338,6 +341,7 @@ io.on('connection', function(socket){
 
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'baron')
+    socket.join(room)
     io.to(toWho).emit(event, lobbyCondition)
   } )
 
@@ -352,6 +356,7 @@ io.on('connection', function(socket){
 
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'handmaid')
+    socket.join(room)
     io.to(toWho).emit(event, lobbyCondition)
   })
 
@@ -381,6 +386,7 @@ io.on('connection', function(socket){
 
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'prince')
+    socket.join(room)
     io.to(toWho).emit(event, lobbyCondition)
   })
 
@@ -398,6 +404,7 @@ io.on('connection', function(socket){
 
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, playerAttacked.id, 'king')
+    socket.join(room)
     io.to(toWho[0]).to(toWho[1]).emit(event, lobbyCondition)
   })
 
@@ -409,6 +416,7 @@ io.on('connection', function(socket){
     lobby.players[playerIndex].hisTurn = false
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'countess')
+    socket.join(room)
     io.to(toWho).emit(event, lobbyCondition)
   })
 
@@ -423,6 +431,7 @@ io.on('connection', function(socket){
     lobby.players[playerIndex].hisTurn = false
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result,socket.id, null, 'princess')
+    socket.join(room)
     io.to(toWho).emit(event, lobbyCondition)
   })
 
@@ -447,6 +456,9 @@ io.on('connection', function(socket){
           deck.splice(rand, 1)
       }
     }
+    lobby.players.forEach(player => {
+      player.isOutOfRound = false
+    })
 
     lobby.discardedCards = discardedCards
     lobby.gameCards = deck
@@ -454,6 +466,7 @@ io.on('connection', function(socket){
     let winner = findOwner(lobby.players)
     let winnerIndex = findPlayerIndex(winner.nickname, lobby.players)
     lobby.players[winnerIndex].hisTurn = true
+    socket.join(room)
     io.to(room).emit('resetReady', lobby)
   })
 

@@ -3,14 +3,11 @@ var socket = io();
 // https://ufaz-love-letter.herokuapp.com
 
 //DOM variables
-const Enemies = document.querySelector('#Enemies')
-const MyPlayer = document.querySelector('#MyPlayer')
-const MyPlayername = document.querySelector('#MyPlayer--Name')
-const MyPlayerCardsOnHand = document.querySelector('#MyPlayer--CardsOnHand')
+const players = document.getElementById('players')
+
+
 //Variables about game
-let players = [];
-let game = {}
-let playersNodes = []
+let lobbyObject
 
 // Parsing the query string
 const nickname = new URLSearchParams(location.search).get('nickname')
@@ -19,71 +16,11 @@ const number = new URLSearchParams(location.search).get('number')
 
 socket.emit('new-user', room, nickname, number)
 socket.on('send-first-message', ( newPlayer, lobby,  status, rooms ) => {
-    console.log(lobby)
-    Enemies.innerHTML = ``
-if(newPlayer.nickname === nickname){
-    localStorage.setItem('player',JSON.stringify(newPlayer))
-}
-const index = lobby.players.findIndex(elem => elem.nickname === nickname)
-players = lobby.players.slice(index,lobby.players.length).concat(lobby.players.slice(0,index))
-players.forEach((player,ind) => {
-    if(ind !== 0){
-        const enemy = document.createElement('div')
-const title = document.createElement('h1')
-title.innerHTML = player.nickname;
-enemy.appendChild(title)
-enemy.setAttribute('class','enemy')
-Enemies.appendChild(enemy)
-    }else{
-        MyPlayername.innerHTML = players[0].nickname
-    }
-})
-if(lobby.isFull){
-    socket.emit('drawCard',room)
-    socket.on('drawnCardReady', (lobby) => {
-        const index = lobby.players.findIndex(elem => elem.nickname === nickname)
-        players = lobby.players.slice(index,lobby.players.length).concat(lobby.players.slice(0,index));
-        Enemies.innerHTML = ``
-       players.forEach((plyr, ind) => {
-        if(ind !== 0){
-            const enemy = document.createElement('div');
-    const title = document.createElement('h1');
-    const cardsOnHand = document.createElement('div');
-    cardsOnHand.setAttribute('class','enemy-cardsOnHand')
-    title.innerHTML = plyr.nickname;
-    enemy.appendChild(title);
-    enemy.setAttribute('class','enemy');
-    plyr.cardsOnHand.forEach((card) => {
-        const cardComp = document.createElement('div')
-        cardComp.setAttribute('class', 'card-so-little')
-        cardsOnHand.appendChild(cardComp)
-    })
-    enemy.appendChild(cardsOnHand)
-    Enemies.appendChild(enemy);
-        }else{
-MyPlayerCardsOnHand.innerHTML = '';
-players[0].cardsOnHand.forEach((crd) => {
-    const card = document.createElement('div')
-card.setAttribute('class', 'MyCard')
-const cardInner = document.createElement('div');
-cardInner.setAttribute('class', 'MyCard-Inner');
-card.appendChild(cardInner)
-const cardInnerFront = document.createElement('div');
-cardInnerFront.setAttribute('class','card-Inner-Front')
-const cardInnerBack = document.createElement('div');
-cardInnerBack.setAttribute('class','card-Inner-Back')
-const img = new Image()
-img.src = `../assets/${crd.card.toLowerCase()}.jpg`
-cardInnerFront.appendChild(img)
-cardInner.appendChild(cardInnerFront)
-cardInner.appendChild(cardInnerBack)
-MyPlayerCardsOnHand.appendChild(card)
-})
-        }
-       })
-    })
-     
-}
+    lobbyObject = lobby
+    var tag = document.createElement("p");
+    var text = document.createTextNode(`Status : ${status} Player : ${newPlayer.nickname} Lobby : ${lobby.room} `);
+    tag.appendChild(text);
+    players.appendChild(tag)
 })
 
 
@@ -93,53 +30,62 @@ drawCard.addEventListener('click', () => {
     socket.emit('drawCard',room)
 })
 socket.on('drawnCardReady', lobby => {
+    lobbyObject = lobby
     console.log("After drawCard: ")
     console.log(lobby)
 })
 
 
 
-// // Draw a card
-// drawAll.addEventListener('click', () => {
-// })
+const drawAll = document.getElementById('drawAll')
+// Draw a card
+drawAll.addEventListener('click', () => {
+    socket.emit('drawAll', room)
+})
+socket.on('drawAllReady', lobby => {
+    lobbyObject = lobby
+    console.log('After drawAll: ')
+    console.log(lobby)
+})
 
 
 
+const discardCard = document.getElementById('discardCard')
+// Discard a card
+discardCard.addEventListener('click', () => {
+    const chooseDiscardCard = document.getElementById('chooseDiscardCard').value
+    socket.emit('discardCard', room, chooseDiscardCard)
+})
+socket.on('discardedCardReady', lobby => {
+    lobbyObject = lobby
+    console.log('After discardCard')
+    console.log(lobby)
+})
 
 
-// // Discard a card
-// discardCard.addEventListener('click', () => {
-//     const chooseDiscardCard = document.getElementById('chooseDiscardCard').value
-//     socket.emit('discardCard', room, chooseDiscardCard)
-// })
-// socket.on('discardedCardReady', player => {
-//     console.log(player)
-// })
+const guard = document.getElementById('guard')
+// Guard
+guard.addEventListener('click', () => {
+    const guess = document.getElementById('guessCard').value
+    console.log(`Your guess is ${guess}`)
+    socket.emit('guard', room , guess, lobbyObject.players[1])
+})
+socket.on('guardReady', lobby => {
+    console.log('After guard: ')
+    console.log(lobby)
+})
 
 
-
-// // Guard
-// guard.addEventListener('click', () => {
-//     const guess = document.getElementById('guessCard').value
-//     console.log(`Your guess is ${guess}`)
-//     socket.emit('guard', room , guess, lobbyObject.players[1])
-// })
-// socket.on('guardReady', lobby => {
-//     console.log('After guard: ')
-//     console.log(lobby)
-// })
-
-
-
-// // Priest
-// priest.addEventListener('click', () => {
-//     socket.emit('priest',room, lobbyObject.players[1])
-// })
-// socket.on('priestReady', (lobby, card) => {
-//     console.log('After priest: ')
-//     console.log(lobby)
-//     alert(card.card)
-// })
+const priest = document.getElementById('priest')
+// Priest
+priest.addEventListener('click', () => {
+    socket.emit('priest',room, lobbyObject.players[1])
+})
+socket.on('priestReady', (lobby, card) => {
+    console.log('After priest: ')
+    console.log(lobby)
+    alert(card.card)
+})
 
 
 
