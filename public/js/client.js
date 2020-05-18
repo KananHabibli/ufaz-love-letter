@@ -40,7 +40,7 @@ Enemies.appendChild(enemy)
 })
 if(lobby.isFull){
     socket.emit('drawCard',room)
-    socket.on('drawnCardReady', (player, lobby) => {
+    socket.on('drawnCardReady', (lobby) => {
         const index = lobby.players.findIndex(elem => elem.nickname === nickname)
         players = lobby.players.slice(index,lobby.players.length).concat(lobby.players.slice(0,index));
         Enemies.innerHTML = ``
@@ -92,8 +92,8 @@ const drawCard = document.getElementById('drawCard')
 drawCard.addEventListener('click', () => {
     socket.emit('drawCard',room)
 })
-socket.on('drawnCardReady', (player, lobby) => {
-    console.log(player)
+socket.on('drawnCardReady', lobby => {
+    console.log("After drawCard: ")
     console.log(lobby)
 })
 

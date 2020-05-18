@@ -28,6 +28,8 @@ const findPlayerByName = (lobby, nickname) => lobby.players.find(player => playe
 
 const findLobby        = (rooms, room) => rooms.find(roomValue => roomValue.room == room)
 
+const findOwner = players => players.find(player => player.isOwner == true)
+
 const findCredentials = (rooms, room, id) => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, id)
@@ -45,6 +47,8 @@ const discardCard = (player, card) => {
     player.cardsOnHand.splice(findCardIndex(player.cardsOnHand, card.card), 1)
     return player
 }
+
+
 
 const nextPlayer = (players, currentPlayer) => {
     let size = players.length - 1
@@ -75,7 +79,11 @@ const roundWinner = lobby => {
     let playersInRound = lobby.players.filter(player => player.isOutOfRound === false)
     playersInRound.sort((a, b) => b.cardsOnHand[0].strength - a.cardsOnHand[0].strength)
     let winnerIndex = findPlayerIndex(playersInRound[0].nickname, lobby.players)
+    let previousOwner = findOwner(lobby.players)
+    let previousOwnerIndex = findPlayerIndex(previousOwner.nickname, lobby.players)
     lobby.players[winnerIndex].roundsWon++
+    lobby.players[winnerIndex].isOwner = true
+    lobby.players[previousOwnerIndex].isOwner = false
     return {
         lobby,
         winner: lobby.players[winnerIndex]
@@ -102,7 +110,11 @@ const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
             toWho: direction
         }
     } else{
+        let previousOwner = findOwner(lobby.players)
+        let previousOwnerIndex = findPlayerIndex(previousOwner.nickname, lobby.players)
         lobby.players[nextIndex].roundsWon++
+        lobby.players[nextIndex].isOwner = true
+        lobby.players[previousOwnerIndex].isOwner = false
         if(lobby.players[nextIndex].roundsWon == lobby.goal){
             return {
                 lobbyCondition: lobby,
@@ -130,6 +142,7 @@ module.exports = {
     findLobby,
     findCard,
     findCredentials,
+    findOwner,
     nextPlayer,
     roundWinner,
     checkCondition
