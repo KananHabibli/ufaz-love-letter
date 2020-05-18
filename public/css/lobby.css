@@ -1,0 +1,95 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: serif;
+    font-style: italic;
+}
+
+#game-container{
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(rgba(255, 58, 58, 0.274),rgba(61, 16, 16, 0.185),rgba(0, 0, 0, 0.288)), url("../assets/game-background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    overflow: hidden;
+    padding-top: 0.5rem;
+    align-items: center;
+}
+
+#Players{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    justify-content: space-between;
+}
+
+#cardholder{
+    width: 70px;
+    height: 100px;
+    background: maroon;
+    box-shadow: 0px 2px 4px 2px black inset;
+    border: 2px solid white;
+}
+
+
+#Enemies{
+width: 100%;
+display: flex;
+justify-content: space-between;
+}
+
+
+.enemy{
+    animation: toggleEnemies 0.3s ease 0s forwards; 
+}
+
+.enemy h1{
+    color: white;
+    font-size: 1.5rem;
+    border-radius: 5px;
+    border-left: 5px solid rgb(196, 127, 0);
+    border-top: 5px solid rgb(253, 188, 67);
+    border-bottom: 5px solid rgb(51, 33, 1);
+    border-right: 5px solid rgb(121, 78, 0);
+    background: linear-gradient(to right, rgba(168, 0, 0, 0.658),rgb(117, 0, 0));
+    padding: 0.5rem;
+    box-shadow: 0px 2px 4px 2px black;
+}
+
+#MyPlayer{
+    align-self: flex-end;
+}
+
+#MyPlayer--Name{
+    color: white;
+    font-style: italic;
+    padding: 0.5rem;
+    border-left: 5px solid rgb(196, 127, 0);
+    border-top: 5px solid rgb(253, 188, 67);
+    border-bottom: 5px solid rgb(51, 33, 1);
+    border-right: 5px solid rgb(121, 78, 0);
+    background-color: maroon;
+    font-size: 1.5rem;
+}
+
+
+
+@keyframes toggleEnemies{
+    0%{
+        transform: translateY(-100vh);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

@@ -3,67 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Document</title>
+    <link rel="stylesheet" href="./css/lobby.css">
+     <link rel="stylesheet" href="./css/lobbyCards.css">
 </head>
 <body>
-    <div class="container mb-4 pb-4">
-        <div id="players"></div>    
-        <button id="start" class="btn btn-success">Start the game</button>
-        <hr>
-        <button class="btn btn-outline-secondary" id="drawCard">Draw a card</button>
-        <hr>
-        <button class="btn btn-warning text-white" id="drawAll">Draw All</button>
-        <hr>
-        <select id="chooseDiscardCard">
-            <option value="Guard">Guard</option>
-            <option value="Priest">Priest</option>
-            <option value="Baron">Baron</option>
-            <option value="Handmaid">Handmaid</option>
-            <option value="Prince">Prince</option>
-            <option value="King">King</option>
-            <option value="Countess">Countess</option>
-            <option value="Princess">Princess</option>
-        </select>
-        <button class="btn btn-danger" id="discardCard">Discard a card</button>
-        <hr>
-        <h2>Guard</h2>
-        <select id="guessCard">
-            <option value="Priest">Priest</option>
-            <option value="Baron">Baron</option>
-            <option value="Handmaid">Handmaid</option>
-            <option value="Prince">Prince</option>
-            <option value="King">King</option>
-            <option value="Countess">Countess</option>
-            <option value="Princess">Princess</option>
-        </select>
-        <button class="btn btn-info" id="guard">Guard</button>
-        <hr>
-        <h2>Priest</h2>
-        <button class="btn btn-outline-danger btn-block w-25" id="priest">Priest</button>
-        <hr>
-        <h2>Baron</h2>
-        <button class="btn btn-outline-warning btn-block w-25" id="baron">Baron</button>
-        <hr>
-        <h2>Handmaid</h2>
-        <button class="btn btn-outline-info btn-block w-25" id="handmaid">Handmaid</button>
-        <hr>
-        <h2>Prince</h2>
-        <button class="btn btn-outline-secondary btn-block w-25" id="prince">Prince</button>
-        <hr>
-        <h2>King</h2>
-        <button class="btn btn-outline-success btn-block w-25" id="king">King</button>
-        <hr>
-        <h2>Countess</h2>
-        <button class="btn btn-outline-primary btn-block w-25" id="countess">Countess</button>
-        <hr>
-        <h2>Princess</h2>
-        <button class="btn btn-outline-dark btn-block w-25" id="princess">Princess</button>
+    <div id="game-container">
+        <div id="Players">
+            <div id="Enemies">
+
+            </div>
+            <div id="MyPlayer">
+                <div id="MyPlayer--CardsOnHand"></div>
+                <div></div>
+                <h1 id="MyPlayer--Name"></h1>
+            </div>
+        </div>
+        <div id="cardholder"></div>
+
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/client.js"></script>
 </body>

@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/createJoin.css">
     <title>Document</title>
 </head>
 <body>
-    <div class="p-5">
-        <h1>Join</h1>
+    <div class="container">
+        <h1>Create</h1>
         <form action="lobby.html">
-            <label for="">Pick a nickname</label>
-            <input type="text" class="form-control w-50" name="nickname" placeholder="ExMeliodas" required>
-            <label for="">Lobby name</label>
-            <input type="text" class="form-control w-50" name="room" placeholder="Room name" required>
-            <label for="">Lobby Password</label>
-            <input type="number" class="form-control w-50" name="number" value="4" min="2" max="4" required>
-            <button id="createLobby" class="btn btn-success mt-3">Play</button>
+            <label for="nickname">Pick a nickname</label>
+            <input type="text" id="nickname" name="nickname" placeholder="Nickname" required>
+            <label for="lobbyname">Lobby name</label>
+            <input type="text" id="lobbyname" name="room" placeholder="Lobby Name" required>
+            <label for="number">Lobby Password</label>
+            <input type="number" id="number" placeholder="Number of players" name="number"  min="2" max="4" required>
+            <hr />
+            <button id="createLobby">Play</button>
         </form>
     </div>
 </body>

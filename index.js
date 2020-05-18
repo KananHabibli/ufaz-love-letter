@@ -261,9 +261,10 @@ io.on('connection', function(socket){
   socket.on('discardCard', (room, card) => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
+    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
     let discardcard  = findCard(player.cardsOnHand, card)
-    player = discardCard(player, discardcard)
-    io.to(room).emit('discardedCardReady', player)
+    lobby.players[playerIndex] = discardCard(player, discardcard)
+    io.to(room).emit('discardedCardReady', lobby)
   })
 
 

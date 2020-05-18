@@ -1,0 +1,86 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.container{
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    display: flex;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    justify-content: space-around;
+    min-height: 300px;
+    flex-direction: column;
+    margin: auto;
+    padding: 1rem;
+    margin-top: 5rem;
+    align-items: center;
+    box-shadow: 0px 2px 8px 4px rgba(0, 0, 0, 0.808);
+    background-color: rgb(172, 77, 60);
+    border-left: 5px solid rgb(248, 248, 106);
+    border-right: 5px solid rgb(129, 129, 1);
+    border-top: 5px solid rgb(204, 204, 0);
+    border-bottom: 5px solid rgb(73, 73, 0);
+    opacity: 0;
+    transform: translateY(100vh);
+    animation: toggleMenu 0.3s ease 0s forwards;
+}
+
+.container > h1{
+    font-size: 3rem;
+    text-shadow: 0px 3px 5px black;
+    color: rgb(255, 208, 0);
+}
+
+body{
+    background-color: rgb(100, 59, 59);
+    overflow: hidden;
+}
+
+.to--create__lobby, .to--join__lobby{
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    font-size: 1.6rem;
+    box-shadow: 0px 3px 5px 2px black;
+    font-style: italic;
+    border-left: 5px solid rgb(248, 248, 106);
+    border-right: 5px solid rgb(104, 104, 0);
+    border-top: 5px solid rgb(204, 204, 0);
+    border-bottom: 5px solid rgb(73, 73, 0);
+    width: max-content;
+    transition: 0.1s ease 0s;
+    padding: 10px;
+    background-color: rgb(100, 6, 6);
+}
+.to--join__lobby:hover,
+.to--join__lobby:active,
+.to--create__lobby:hover,
+.to--create__lobby:active{
+    background-color: rgb(34, 0, 0);
+    box-shadow: 0px 2px 6px 4px black;
+
+}
+
+@keyframes toggleMenu{
+    0%{
+        opacity: 0;
+        transform: translateY(100vh);
+    }
+    100%{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media(max-width:400px){
+    .container > h1{
+        margin-bottom: 1rem;
+    }
+    .to--create__lobby, .to--join__lobby{
+        margin: 0.5rem auto;
+    }
+}

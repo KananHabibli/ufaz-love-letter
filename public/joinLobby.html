@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/createJoin.css">
     <title>Document</title>
 </head>
 <body>
-    <div class="p-5">
+    <div class="container">
         <h1>Join</h1>
         <form action="lobby.html">
-            <label for="">Pick a nickname</label>
-            <input type="text" class="form-control w-50" name="nickname" placeholder="ExMeliodas" required>
-            <label for="">Lobby name</label>
-            <input type="text" class="form-control w-50" name="room" placeholder="Room name" required>
-            <button class="btn btn-success mt-3">Play</button>
+            <label for="nickname">Pick a nickname</label>
+            <input type="text" id="nickname" name="nickname" placeholder="Nickname" required>
+            <label for="lobbyname">Lobby name</label>
+            <input type="text" id="lobbyname" name="room" placeholder="Lobby name" required>
+            <button id="createLobby">Play</button>
         </form>
     </div>
 </body>
