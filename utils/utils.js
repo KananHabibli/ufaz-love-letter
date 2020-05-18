@@ -82,6 +82,43 @@ const roundWinner = lobby => {
     }
 }
 
+// lobbyCondition, event, toWho
+const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
+    let direction
+    if(event === "priest") {
+        direction = id
+    } else if(event === "king"){
+        direction = []
+        direction[0] = id
+        direction[1] = opponentID
+    } else {
+        direction = lobby.room
+    }
+    if(result == "Round is on"){
+        lobby.players[nextIndex].hisTurn = true
+        return {
+            lobbyCondition: lobby,
+            event: `${event}Ready`,
+            toWho: direction
+        }
+    } else{
+        lobby.players[nextIndex].roundsWon++
+        if(lobby.players[nextIndex].roundsWon == lobby.goal){
+            return {
+                lobbyCondition: lobby,
+                event: `gameOver`,
+                toWho: lobby.room
+            }
+        } else {
+            return {
+                lobbyCondition: lobby,
+                event: `roundOver`,
+                toWho: lobby.room
+            }
+        }
+    }
+}
+
 module.exports = {
     randomNumber,
     shuffleCards,
@@ -94,5 +131,6 @@ module.exports = {
     findCard,
     findCredentials,
     nextPlayer,
-    roundWinner
+    roundWinner,
+    checkCondition
 }
