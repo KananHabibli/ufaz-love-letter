@@ -22,6 +22,10 @@ mongoose.connect(keys.mongoURI, {
 mongoose.set('useCreateIndex', true);
 
 
+// cors
+var cors = require('cors')
+app.use(cors())
+
 // Built-in node package for working with file and directory paths
 const path = require('path')
 
@@ -206,6 +210,7 @@ io.on('connection', function(socket){
           goal,
           isFull: false,
           currentRound: 1,
+          numberOfPlayersInRound: parseInt(number),
           numberOfPlayers: number,
           players: [newPlayer],
           game: {
@@ -292,6 +297,7 @@ io.on('connection', function(socket){
     if(playerAttacked.cardsOnHand[0].card === guess){
       // playerAttacked is out of round
       lobby.players[playerAttackedIndex].isOutOfRound = true
+      lobby.numberOfPlayers--
       // playerAttacked's card discarded
       lobby.players[playerAttackedIndex] = discardCard(lobby.players[playerAttackedIndex], playerAttacked.cardsOnHand[0])
     }
@@ -334,6 +340,7 @@ io.on('connection', function(socket){
       lobby.players[playerAttackingIndex].isOutOfRound = true
       lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], otherCard)
     }
+    lobby.numberOfPlayers--
     let card = findCard(player.cardsOnHand, "Baron")
 
     lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], card)
@@ -426,11 +433,12 @@ io.on('connection', function(socket){
     for (let i = 0; i < player.cardsOnHand.length; i++) {
       player = discardCard(player, player.cardsOnHand[i])
     }
-    let answer = `${player.nickname} is out of round because of discarding of Princess`
     lobby.players[playerIndex].isOutOfRound = true
     lobby.players[playerIndex].hisTurn = false
+    lobby.numberOfPlayers--
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result,socket.id, null, 'princess')
+    console.log(nextIndex + result)
     socket.join(room)
     io.to(toWho).emit(event, lobbyCondition)
   })
@@ -456,12 +464,15 @@ io.on('connection', function(socket){
           deck.splice(rand, 1)
       }
     }
+
     lobby.players.forEach(player => {
       player.isOutOfRound = false
+      player.cardsOnHand = []
+      player.cardsDiscarded = []
     })
-
-    lobby.discardedCards = discardedCards
-    lobby.gameCards = deck
+    lobby.numberOfPlayers = parseInt(lobby.numberOfPlayers)
+    lobby.cards.discardedCards = discardedCards
+    lobby.cards.gameCards = deck
     lobby.currentRound++
     let winner = findOwner(lobby.players)
     let winnerIndex = findPlayerIndex(winner.nickname, lobby.players)

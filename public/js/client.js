@@ -88,72 +88,80 @@ socket.on('priestReady', (lobby, card) => {
 })
 
 
-
-// // Baron
-// baron.addEventListener('click', () => {
-//     socket.emit('baron', room, lobbyObject.players[1])
-// })
-// socket.on('baronReady',(lobby, answer) => {
-//     console.log("After baron")
-//     console.log(lobby)
-//     alert(answer)
-// } )
-
+const baron = document.getElementById('baron')
+// Baron
+baron.addEventListener('click', () => {
+    socket.emit('baron', room, lobbyObject.players[1])
+})
+socket.on('baronReady',lobby => {
+    console.log("After baron")
+    console.log(lobby)
+} )
 
 
-// // Handmaid
-// handmaid.addEventListener('click', () => {
-//     socket.emit('handmaid', room)
-// })
-// socket.on('handmaidReady', lobby => {
-//     console.log("After handmaid: ")
-//     console.log(lobby)
-// })
+const handmaid = document.getElementById('handmaid')
+// Handmaid
+handmaid.addEventListener('click', () => {
+    socket.emit('handmaid', room)
+})
+socket.on('handmaidReady', lobby => {
+    console.log("After handmaid: ")
+    console.log(lobby)
+})
 
 
-
-// // Prince
-// prince.addEventListener('click', () => {
-//     socket.emit('prince', room, lobbyObject.players[1])
-// })
-// socket.on('princeReady', (lobby, result) => {
-//     console.log('After prince: ')
-//     console.log(lobby)
-//     alert(result)
-// })
-
+const prince = document.getElementById('prince')
+// Prince
+prince.addEventListener('click', () => {
+    socket.emit('prince', room, lobbyObject.players[1])
+})
+socket.on('princeReady', lobby => {
+    console.log('After prince: ')
+    console.log(lobby)
+})
 
 
-// // King
-// king.addEventListener('click', () => {
-//     socket.emit('king', room, lobbyObject.players[1])
-// })
-// socket.on('kingReady', lobby => {
-//     console.log("After king: ")
-//     console.log(lobby)
-// })
+const king = document.getElementById('king')
+// King
+king.addEventListener('click', () => {
+    socket.emit('king', room, lobbyObject.players[1])
+})
+socket.on('kingReady', lobby => {
+    console.log("After king: ")
+    console.log(lobby)
+})
 
 
+const countess = document.getElementById('countess')
+// Countess
+countess.addEventListener('click', () => {
+    socket.emit('countess', room)
+})
+socket.on('countessReady', lobby => {
+    console.log("After countess: ")
+    console.log(lobby)
+})
 
-// // Countess
-// countess.addEventListener('click', () => {
-//     socket.emit('countess', room)
-// })
-// socket.on('countessReady', lobby => {
-//     console.log("After countess: ")
-//     console.log(lobby)
-// })
 
+const princess = document.getElementById('princess')
+// Princess
+princess.addEventListener('click', () => {
+    socket.emit('princess', room)
+})
+socket.on('princessReady', lobby => {
+    console.log("After princess: ")
+    console.log(lobby)
+})
 
-
-// // Princess
-// princess.addEventListener('click', () => {
-//     socket.emit('princess', room)
-// })
-// socket.on('princessReady', (lobby, answer) => {
-//     console.log(lobby)
-//     alert(answer)
-// })
+const reset = document.getElementById('reset')
+// Princess
+reset.addEventListener('click', () => {
+    socket.emit('reset', room)
+})
+socket.on('resetReady', lobby => {
+    console.log("After reset: ")
+    console.log(lobby)
+})
 
 // Round is over
 socket.on('roundOver', lobby => {

@@ -54,6 +54,15 @@ const nextPlayer = (players, currentPlayer) => {
     let size = players.length - 1
     let currentIndex = findPlayerIndex(currentPlayer.nickname, players)
     let index = currentIndex + 1
+    if(index == players.length){
+        index = 0
+    }
+    if(lobby.numberOfPlayersInRound == 1){
+        return {
+            nextIndex: currentIndex,
+            result: "Round over"
+        }
+    }
     while(size > 0){
         if(players[index].isOutOfRound === false){
             players[index].hisTurn = true
@@ -68,10 +77,6 @@ const nextPlayer = (players, currentPlayer) => {
                 index = 0
             }
         }
-    }
-    return {
-        nextIndex: currentIndex,
-        result: "Round over"
     }
 }
 
@@ -92,17 +97,17 @@ const roundWinner = lobby => {
 
 // lobbyCondition, event, toWho
 const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
-    let direction
-    if(event === "priest") {
-        direction = id
-    } else if(event === "king"){
-        direction = []
-        direction[0] = id
-        direction[1] = opponentID
-    } else {
-        direction = lobby.room
-    }
     if(result == "Round is on"){
+        let direction
+        if(event === "priest") {
+            direction = id
+        } else if(event === "king"){
+            direction = []
+            direction[0] = id
+            direction[1] = opponentID
+        } else {
+            direction = lobby.room
+        }
         lobby.players[nextIndex].hisTurn = true
         return {
             lobbyCondition: lobby,
