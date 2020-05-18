@@ -19,7 +19,7 @@ const number = new URLSearchParams(location.search).get('number')
 
 socket.emit('new-user', room, nickname, number)
 socket.on('send-first-message', ( newPlayer, lobby,  status, rooms ) => {
-
+    console.log(lobby)
     Enemies.innerHTML = ``
 if(newPlayer.nickname === nickname){
     localStorage.setItem('player',JSON.stringify(newPlayer))
@@ -86,15 +86,16 @@ MyPlayerCardsOnHand.appendChild(card)
 }
 })
 
-// // Draw a card
-// drawCard.addEventListener('click', () => {
-//     // let player = localStorage.getItem('player')
-//     socket.emit('drawCard',room)
-// })
-// socket.on('drawnCardReady', (player, lobby) => {
-//     console.log(player)
-//     console.log(lobby)
-// })
+
+const drawCard = document.getElementById('drawCard')
+// Draw a card
+drawCard.addEventListener('click', () => {
+    socket.emit('drawCard',room)
+})
+socket.on('drawnCardReady', (player, lobby) => {
+    console.log(player)
+    console.log(lobby)
+})
 
 
 
@@ -208,18 +209,18 @@ MyPlayerCardsOnHand.appendChild(card)
 //     alert(answer)
 // })
 
-// // Round is over
-// socket.on('roundOver', (lobby, roundWinner) => {
-//     console.log(lobby)
-//     alert(`${roundWinner.nickname} won the round`)
+// Round is over
+socket.on('roundOver', (lobby, roundWinner) => {
+    console.log(lobby)
+    alert(`${roundWinner.nickname} won the round`)
     
-// } )
+} )
 
-// // Game is over
-// socket.on('gameOver', (lobby, gameWinner) => {
-//     console.log(lobby)
-//     alert(`${gameWinner.nickname} won the game`)
-// })
+// Game is over
+socket.on('gameOver', (lobby, gameWinner) => {
+    console.log(lobby)
+    alert(`${gameWinner.nickname} won the game`)
+})
 socket.on('throwError', error => {
     alert(error)
 })

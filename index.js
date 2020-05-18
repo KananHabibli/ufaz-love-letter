@@ -92,7 +92,8 @@ const { randomNumber,
         findPlayerByID,
         findLobby,
         findCard,
-        nextPlayer } = require('./utils/utils')
+        nextPlayer,
+        roundWinner } = require('./utils/utils')
 const errorMap = require('./utils/errorMap')
 
 // Main route
@@ -228,20 +229,30 @@ io.on('connection', function(socket){
   socket.on('drawCard', room => {
     let lobby  = findLobby(rooms, room)
     let player = findPlayerByID(lobby, socket.id)
-    let cardDrawing = lobby.cards.gameCards[0]
-    player.cardsOnHand.push(cardDrawing)
-    lobby.cards.gameCards.splice(0, 1)
-    if(player.cardsOnHand.length == 2){
-      if((cardDrawing.card === 'King' || cardDrawing.card === 'Prince') && player.cardsOnHand[0].card === 'Countess'){
-        player = discardCard(player, player.cardsOnHand[0])
-        player.hisTurn = false
+    let playerIndex = findPlayerIndex(player.nickname, lobby.players)
+    if(lobby.cards.gameCards.length == 0){
+      let {lobby: roundLobby, winner: roundWinnerPlayer} = roundWinner(lobby)
+      if(roundWinnerPlayer.roundsWon == lobby.goal){
+        io.to(room).emit('gameOver', lobby, rounroundWinnerPlayerdWinner)
+      } else {
+        io.to(room).emit('roundOver', lobby, roundWinnerPlayer)
       }
-      if(cardDrawing.card === 'Countess' && (player.cardsOnHand[0].card === 'King' || player.cardsOnHand[0].card === 'Prince')){
-        player = discardCard(player, player.cardsOnHand[1])
-        player.hisTurn = false
+    } else {
+      let cardDrawing = lobby.cards.gameCards[0]
+      lobby.players[playerIndex].cardsOnHand.push(cardDrawing)
+      lobby.cards.gameCards.splice(0, 1)
+      if(lobby.players[playerIndex].cardsOnHand.length == 2){
+        if((cardDrawing.card === 'King' || cardDrawing.card === 'Prince') && lobby.players[playerIndex].cardsOnHand[0].card === 'Countess'){
+          lobby.players[playerIndex] = discardCard(player, player.cardsOnHand[0])
+          lobby.players[playerIndex].hisTurn = false
+        }
+        if(cardDrawing.card === 'Countess' && (lobby.players[playerIndex].cardsOnHand[0].card === 'King' || lobby.players[playerIndex].cardsOnHand[0].card === 'Prince')){
+          lobby.players[playerIndex] = discardCard(player, player.cardsOnHand[1])
+          lobby.players[playerIndex].hisTurn = false
+        }
       }
+      io.to(room).emit('drawnCardReady', player, lobby)
     }
-    io.to(room).emit('drawnCardReady', player, lobby)
   })
 
   socket.on('drawAll', room => {
@@ -400,7 +411,7 @@ io.on('connection', function(socket){
     let discardingCard = playerAttacked.cardsOnHand[0]
     lobby.players[playerAttackedIndex] = discardCard(playerAttacked, discardingCard)
     let answer
-    if(discardingCard.card === 'Princess'){
+    if(discardingCard.card === 'Princess'){``
       lobby.players[playerAttackedIndex].isOutOfRound = true
       answer = `${playerAttacked.nickname} is out of round`
     } else {

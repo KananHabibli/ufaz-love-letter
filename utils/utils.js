@@ -59,6 +59,17 @@ const nextPlayer = (players, currentPlayer) => {
     }
 }
 
+const roundWinner = lobby => {
+    let playersInRound = lobby.players.filter(player => player.isOutOfRound === false)
+    playersInRound.sort((a, b) => b.cardsOnHand[0].strength - a.cardsOnHand[0].strength)
+    let winnerIndex = findPlayerIndex(playersInRound[0].nickname, lobby.players)
+    lobby.players[winnerIndex].roundsWon++
+    return {
+        lobby,
+        winner: lobby.players[winnerIndex]
+    }
+}
+
 module.exports = {
     randomNumber,
     shuffleCards,
@@ -69,5 +80,6 @@ module.exports = {
     findPlayerByName,
     findLobby,
     findCard,
-    nextPlayer
+    nextPlayer,
+    roundWinner
 }
