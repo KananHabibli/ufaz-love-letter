@@ -174,6 +174,7 @@ socket.on('roundOver', lobby => {
 socket.on('gameOver', lobby => {
     console.log("After gameOver: ")
     console.log(lobby)
+    alert('gg')
 })
 socket.on('throwError', error => {
     alert(error)
