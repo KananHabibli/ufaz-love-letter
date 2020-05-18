@@ -210,16 +210,16 @@ socket.on('drawnCardReady', (player, lobby) => {
 // })
 
 // Round is over
-socket.on('roundOver', (lobby, roundWinner) => {
+socket.on('roundOver', lobby => {
+    console.log("After roundOver: ")
     console.log(lobby)
-    alert(`${roundWinner.nickname} won the round`)
     
-} )
+})
 
 // Game is over
-socket.on('gameOver', (lobby, gameWinner) => {
+socket.on('gameOver', lobby => {
+    console.log("After roundOver: ")
     console.log(lobby)
-    alert(`${gameWinner.nickname} won the game`)
 })
 socket.on('throwError', error => {
     alert(error)

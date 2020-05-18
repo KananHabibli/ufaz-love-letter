@@ -232,9 +232,9 @@ io.on('connection', function(socket){
     if(lobby.cards.gameCards.length == 0){
       let {lobby: roundLobby, winner: roundWinnerPlayer} = roundWinner(lobby)
       if(roundWinnerPlayer.roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, rounroundWinnerPlayerdWinner)
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, roundWinnerPlayer)
+        io.to(room).emit('roundOver', lobby)
       }
     } else {
       let cardDrawing = lobby.cards.gameCards[0]
@@ -250,7 +250,7 @@ io.on('connection', function(socket){
           lobby.players[playerIndex].hisTurn = false
         }
       }
-      io.to(room).emit('drawnCardReady', player, lobby)
+      io.to(room).emit('drawnCardReady', lobby)
     }
   })
 
@@ -305,9 +305,9 @@ io.on('connection', function(socket){
     } else{
       lobby.players[nextIndex].roundsWon++
       if(lobby.players[nextIndex].roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('roundOver', lobby)
       }
     }
     
@@ -328,9 +328,9 @@ io.on('connection', function(socket){
     } else{
       lobby.players[nextIndex].roundsWon++
       if(lobby.players[nextIndex].roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('roundOver', lobby)
       }
     }
   })
@@ -363,9 +363,9 @@ io.on('connection', function(socket){
     } else{
       lobby.players[nextIndex].roundsWon++
       if(lobby.players[nextIndex].roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('roundOver', lobby)
       }
     }
   } )
@@ -386,9 +386,9 @@ io.on('connection', function(socket){
     } else{
       lobby.players[nextIndex].roundsWon++
       if(lobby.players[nextIndex].roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('roundOver', lobby)
       }
     }
   })
@@ -420,13 +420,13 @@ io.on('connection', function(socket){
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     if(result == "Round is on"){
       lobby.players[nextIndex].hisTurn = true
-      io.to(room).emit('princeReady', lobby, answer)
+      io.to(room).emit('princeReady', lobby)
     } else{
       lobby.players[nextIndex].roundsWon++
       if(lobby.players[nextIndex].roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('roundOver', lobby)
       }
     }
   })
@@ -450,9 +450,9 @@ io.on('connection', function(socket){
     } else{
       lobby.players[nextIndex].roundsWon++
       if(lobby.players[nextIndex].roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('roundOver', lobby)
       }
     }
   })
@@ -470,9 +470,9 @@ io.on('connection', function(socket){
     } else{
       lobby.players[nextIndex].roundsWon++
       if(lobby.players[nextIndex].roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('roundOver', lobby)
       }
     }
   })
@@ -489,13 +489,13 @@ io.on('connection', function(socket){
     let {nextIndex, result} = nextPlayer(lobby.players, player)
     if(result == "Round is on"){
       lobby.players[nextIndex].hisTurn = true
-      io.to(room).emit('princessReady', lobby, answer)
+      io.to(room).emit('princessReady', lobby)
     } else{
       lobby.players[nextIndex].roundsWon++
       if(lobby.players[nextIndex].roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('gameOver', lobby)
       } else {
-        io.to(room).emit('roundOver', lobby, lobby.players[nextIndex])
+        io.to(room).emit('roundOver', lobby)
       }
     }
   })
