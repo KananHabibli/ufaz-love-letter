@@ -1,4 +1,4 @@
-var socket = io();
+var socket = io.connect("https://ufaz-love-letter.herokuapp.com");
 // 
 // https://ufaz-love-letter.herokuapp.com
 
@@ -172,7 +172,7 @@ socket.on('roundOver', lobby => {
 
 // Game is over
 socket.on('gameOver', lobby => {
-    console.log("After roundOver: ")
+    console.log("After gameOver: ")
     console.log(lobby)
 })
 socket.on('throwError', error => {
