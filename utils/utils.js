@@ -50,22 +50,26 @@ const discardCard = (player, card) => {
 
 
 
-const nextPlayer = (players, currentPlayer) => {
-    let size = players.length - 1
-    let currentIndex = findPlayerIndex(currentPlayer.nickname, players)
+const nextPlayer = (lobby, currentPlayer) => {
+    let size = lobby.players.length - 1
+    let currentIndex = findPlayerIndex(currentPlayer.nickname, lobby.players)
     let index = currentIndex + 1
-    if(index == players.length){
+    if(index == lobby.players.length){
         index = 0
     }
+    console.log(`Index: ${index}`)
     if(lobby.numberOfPlayersInRound == 1){
+        let remainingPlayer = lobby.players.find(player => player.isOutOfRound == false)
+        let remainingPlayerIndex = findPlayerIndex(remainingPlayer.nickname, lobby.players)
         return {
-            nextIndex: currentIndex,
+            nextIndex: remainingPlayerIndex,
             result: "Round over"
         }
     }
     while(size > 0){
-        if(players[index].isOutOfRound === false){
-            players[index].hisTurn = true
+        console.log('lmao')
+        if(lobby.players[index].isOutOfRound == false){
+            lobby.players[index].hisTurn = true
             return {
                 nextIndex: index,
                 result: "Round is on"
@@ -73,7 +77,7 @@ const nextPlayer = (players, currentPlayer) => {
         } else {
             size--
             index++
-            if(index == players.length){
+            if(index == lobby.players.length){
                 index = 0
             }
         }
@@ -118,7 +122,10 @@ const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
         let previousOwner = findOwner(lobby.players)
         let previousOwnerIndex = findPlayerIndex(previousOwner.nickname, lobby.players)
         lobby.players[previousOwnerIndex].isOwner = false
-        lobby.players[nextIndex].roundsWon++
+        lobby.players[nextIndex].roundsWon = lobby.players[nextIndex].roundsWon + 1
+        console.log(`roundsWon: ${lobby.players[nextIndex].roundsWon}`)
+        console.log(`roundsWon: ${lobby.goal}`)
+        console.log(lobby.players[nextIndex].roundsWon == lobby.goal)
         lobby.players[nextIndex].isOwner = true
         if(lobby.players[nextIndex].roundsWon == lobby.goal){
             return {
