@@ -264,6 +264,7 @@ io.on('connection', function(socket){
         lobby.players[i].cardsOnHand.push(lobby.cards.gameCards[0])
         lobby.cards.gameCards.splice(0, 1)
       }
+      socket.join(room)
       io.to(room).emit('drawAllReady', lobby)
     } else {
       io.to(room).emit('throwError', 103)
