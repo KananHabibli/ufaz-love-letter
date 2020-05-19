@@ -317,7 +317,6 @@ io.on('connection', function(socket){
     }
     let card = findCard(playerAttacking.cardsOnHand, "Guard")
 
-
     lobby.game.playerAttacked  = playerAttacked.nickname
     lobby.game.playerAttacking = playerAttacking.nickname
     lobby.game.cardPlayer      = card.card
@@ -336,6 +335,10 @@ io.on('connection', function(socket){
   socket.on('priest', (room, playerAttacked) => {
     let {lobby, player, playerIndex: index} = findCredentials(rooms, room, socket.id)
     let card = findCard(player.cardsOnHand, "Priest")
+
+    lobby.game.playerAttacked  = playerAttacked.nickname
+    lobby.game.playerAttacking = player.nickname
+    lobby.game.cardPlayer      = card.card
 
     lobby.players[index] = discardCard(lobby.players[index], card)
     lobby.players[index].hisTurn = false
@@ -362,6 +365,10 @@ io.on('connection', function(socket){
       lobby.numberOfPlayersInRound--
     }
     let card = findCard(player.cardsOnHand, "Baron")
+
+    lobby.game.playerAttacked  = playerAttacked.nickname
+    lobby.game.playerAttacking = player.nickname
+    lobby.game.cardPlayer      = card.card
 
     lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], card)
     lobby.players[playerAttackingIndex].hisTurn = false
@@ -409,6 +416,10 @@ io.on('connection', function(socket){
     }
     let card = findCard(player.cardsOnHand, "Prince")
 
+    lobby.game.playerAttacked  = playerAttacked.nickname
+    lobby.game.playerAttacking = player.nickname
+    lobby.game.cardPlayer      = card.card
+
     lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], card)
     lobby.players[playerAttackingIndex].hisTurn = false
 
@@ -427,6 +438,11 @@ io.on('connection', function(socket){
 
     player.cardsOnHand[otherCardIndex] = lobby.players[playerAttackedIndex].cardsOnHand[0]
     lobby.players[playerAttackedIndex].cardsOnHand[0] = otherCard
+
+    llobby.game.playerAttacked  = playerAttacked.nickname
+    lobby.game.playerAttacking  = player.nickname
+    lobby.game.cardPlayer       = card.card
+
     lobby.players[playerIndex] = discardCard(player, findCard(player.cardsOnHand, "King"))
     lobby.players[playerIndex].hisTurn = false
 
