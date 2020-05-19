@@ -310,10 +310,12 @@ io.on('connection', function(socket){
   socket.on('guard', (room, guess, playerAttacked) => {
     let {lobby, player: playerAttacking, playerIndex: playerAttackingIndex} = findCredentials(rooms, room, socket.id)
     let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
+    let matched = false
     if(playerAttacked.cardsOnHand[0].card === guess){
       lobby.players[playerAttackedIndex].isOutOfRound = true
       lobby.numberOfPlayersInRound--
       lobby.players[playerAttackedIndex] = discardCard(lobby.players[playerAttackedIndex], playerAttacked.cardsOnHand[0])
+      matched = true
     }
     let card = findCard(playerAttacking.cardsOnHand, "Guard")
 
@@ -327,7 +329,7 @@ io.on('connection', function(socket){
     let {nextIndex, result} = nextPlayer(lobby, playerAttacking)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'guard')
     socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition)
+    io.to(toWho).emit(event, lobbyCondition, matched)
     
   })
 
