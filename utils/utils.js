@@ -57,7 +57,7 @@ const nextPlayer = (lobby, currentPlayer) => {
     if(index == lobby.players.length){
         index = 0
     }
-    console.log(`Index: ${index}`)
+    console.log(`Next Player Index: ${index}`)
     if(lobby.numberOfPlayersInRound == 1){
         let remainingPlayer = lobby.players.find(player => player.isOutOfRound == false)
         let remainingPlayerIndex = findPlayerIndex(remainingPlayer.nickname, lobby.players)
@@ -124,9 +124,14 @@ const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
         lobby.players[previousOwnerIndex].isOwner = false
         lobby.players[nextIndex].roundsWon = lobby.players[nextIndex].roundsWon + 1
         console.log(`roundsWon: ${lobby.players[nextIndex].roundsWon}`)
-        console.log(`roundsWon: ${lobby.goal}`)
+        console.log(`goal: ${lobby.goal}`)
         console.log(lobby.players[nextIndex].roundsWon == lobby.goal)
         lobby.players[nextIndex].isOwner = true
+        lobby.players.forEach(player => {
+            if(player.isOutOfRound == false){
+                player = discardCard(player, player.cardsOnHand[0])
+            }
+        })
         if(lobby.players[nextIndex].roundsWon == lobby.goal){
             return {
                 lobbyCondition: lobby,
