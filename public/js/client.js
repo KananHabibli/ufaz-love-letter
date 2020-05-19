@@ -70,9 +70,10 @@ guard.addEventListener('click', () => {
     console.log(`Your guess is ${guess}`)
     socket.emit('guard', room , guess, lobbyObject.players[1])
 })
-socket.on('guardReady', lobby => {
+socket.on('guardReady', (lobby, matched) => {
     console.log('After guard: ')
     console.log(lobby)
+    alert(matched)
 })
 
 

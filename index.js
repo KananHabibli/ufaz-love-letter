@@ -77,7 +77,7 @@ app.use((req, res, next) => {
   next()
 })
 
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 4000
 
 const morgan = require('morgan')
 const fs = require('fs')
@@ -260,9 +260,9 @@ io.on('connection', function(socket){
     if(lobby.cards.gameCards.length == 0){
       let {lobby: roundLobby, winner: roundWinnerPlayer} = roundWinner(lobby)
       if(roundWinnerPlayer.roundsWon == lobby.goal){
-        io.to(room).emit('gameOver', lobby)
+        io.to(room).emit('gameOver', roundLobby)
       } else {
-        io.to(room).emit('roundOver', lobby)
+        io.to(room).emit('roundOver', roundLobby)
       }
     } else {
       let cardDrawing = lobby.cards.gameCards[0]
@@ -329,7 +329,8 @@ io.on('connection', function(socket){
     let {nextIndex, result} = nextPlayer(lobby, playerAttacking)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'guard')
     socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition, matched)
+    console.log(matched)
+    io.in(toWho).emit(event, lobbyCondition, matched)
     
   })
 
@@ -348,7 +349,7 @@ io.on('connection', function(socket){
     let {nextIndex, result} = nextPlayer(lobby, lobby.players[index])
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'priest')
     socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition, playerAttacked.cardsOnHand[0])
+    io.in(toWho).emit(event, lobbyCondition, playerAttacked.cardsOnHand[0])
   })
 
 

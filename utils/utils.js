@@ -70,6 +70,8 @@ const nextPlayer = (lobby, currentPlayer) => {
         console.log('lmao')
         if(lobby.players[index].isOutOfRound == false){
             lobby.players[index].hisTurn = true
+            lobby.players[index].cardsOnHand.push(lobby.cards.gameCards[0])
+            lobby.cards.gameCards.splice(0, 1)
             return {
                 nextIndex: index,
                 result: "Round is on"
