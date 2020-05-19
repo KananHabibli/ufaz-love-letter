@@ -317,6 +317,11 @@ io.on('connection', function(socket){
     }
     let card = findCard(playerAttacking.cardsOnHand, "Guard")
 
+
+    lobby.game.playerAttacked = playerAttacked
+    lobby.game.playerAttacking = playerAttacking
+    lobby.game.cardPlayer = card.card
+    
     lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], card)
     lobby.players[playerAttackingIndex].hisTurn = false
 
