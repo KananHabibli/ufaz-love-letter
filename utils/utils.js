@@ -48,6 +48,12 @@ const discardCard = (player, card) => {
     return player
 }
 
+const checkDiscard = card => {
+    if(card.card === "Princess"){
+        return true
+    }
+    return false
+}
 
 
 const nextPlayer = (lobby, currentPlayer) => {
@@ -62,6 +68,7 @@ const nextPlayer = (lobby, currentPlayer) => {
         let remainingPlayer = lobby.players.find(player => player.isOutOfRound == false)
         let remainingPlayerIndex = findPlayerIndex(remainingPlayer.nickname, lobby.players)
         return {
+            nextLobby: lobby,
             nextIndex: remainingPlayerIndex,
             result: "Round over"
         }
@@ -69,12 +76,22 @@ const nextPlayer = (lobby, currentPlayer) => {
     while(size > 0){
         console.log('lmao')
         if(lobby.players[index].isOutOfRound == false){
-            lobby.players[index].hisTurn = true
-            lobby.players[index].cardsOnHand.push(lobby.cards.gameCards[0])
-            lobby.cards.gameCards.splice(0, 1)
-            return {
-                nextIndex: index,
-                result: "Round is on"
+            if(lobby.cards.gameCards.length == 0){
+                let {lobby: nextLobby, winner} = roundWinner(lobby)
+                return {
+                    nextLobby,
+                    nextIndex: findPlayerIndex(winner.nickname, nextLobby.players),
+                    result: "Round over"
+                }
+            } else {
+                lobby.players[index].hisTurn = true
+                lobby.players[index].cardsOnHand.push(lobby.cards.gameCards[0])
+                lobby.cards.gameCards.splice(0, 1)
+                return {
+                    nextLobby: lobby,
+                    nextIndex: index,
+                    result: "Round is on"
+                }
             }
         } else {
             size--
@@ -117,7 +134,6 @@ const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
         lobby.players[nextIndex].roundsWon = lobby.players[nextIndex].roundsWon + 1
         console.log(`roundsWon: ${lobby.players[nextIndex].roundsWon}`)
         console.log(`goal: ${lobby.goal}`)
-        console.log(lobby.players[nextIndex].roundsWon == lobby.goal)
         lobby.players[nextIndex].isOwner = true
         lobby.players.forEach(player => {
             if(player.isOutOfRound == false){
@@ -154,5 +170,6 @@ module.exports = {
     findOwner,
     nextPlayer,
     roundWinner,
-    checkCondition
+    checkCondition,
+    checkDiscard
 }
