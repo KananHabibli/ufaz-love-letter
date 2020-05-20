@@ -267,16 +267,6 @@ io.on('connection', function(socket){
       let cardDrawing = lobby.cards.gameCards[0]
       lobby.players[playerIndex].cardsOnHand.push(cardDrawing)
       lobby.cards.gameCards.splice(0, 1)
-      if(lobby.players[playerIndex].cardsOnHand.length == 2){
-        if((cardDrawing.card === 'King' || cardDrawing.card === 'Prince') && lobby.players[playerIndex].cardsOnHand[0].card === 'Countess'){
-          lobby.players[playerIndex] = discardCard(player, player.cardsOnHand[0])
-          lobby.players[playerIndex].hisTurn = false
-        }
-        if(cardDrawing.card === 'Countess' && (lobby.players[playerIndex].cardsOnHand[0].card === 'King' || lobby.players[playerIndex].cardsOnHand[0].card === 'Prince')){
-          lobby.players[playerIndex] = discardCard(player, player.cardsOnHand[1])
-          lobby.players[playerIndex].hisTurn = false
-        }
-      }
       io.to(room).emit('drawnCardReady', lobby)
     }
   })
