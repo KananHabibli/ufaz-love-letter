@@ -445,7 +445,7 @@ io.on('connection', function(socket){
     let {nextIndex, result} = nextPlayer(lobby, player)
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, playerAttacked.id, 'king')
     socket.join(room)
-    io.to(toWho[0]).to(toWho[1]).emit(event, lobbyCondition)
+    io.to(toWho).emit(event, lobbyCondition)
   })
 
 
