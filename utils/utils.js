@@ -105,9 +105,7 @@ const roundWinner = lobby => {
 const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
     if(result == "Round is on"){
         let direction
-        if(event === "priest") {
-            direction = id
-        } else if(event === "king"){
+        if(event === "king"){
             direction = []
             direction[0] = id
             direction[1] = opponentID

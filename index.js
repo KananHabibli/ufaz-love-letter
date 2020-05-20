@@ -121,7 +121,6 @@ const { randomNumber,
         nextPlayer,
         roundWinner,
         checkCondition } = require('./utils/utils')
-const errorMap = require('./utils/errorMap')
 
 // Main route
 app.get('/',function(req,res) {
@@ -338,6 +337,7 @@ io.on('connection', function(socket){
   socket.on('priest', (room, playerAttacked) => {
     let {lobby, player, playerIndex: index} = findCredentials(rooms, room, socket.id)
     let card = findCard(player.cardsOnHand, "Priest")
+    let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
 
     lobby.game.playerAttacked  = playerAttacked.nickname
     lobby.game.playerAttacking = player.nickname
@@ -348,8 +348,8 @@ io.on('connection', function(socket){
 
     let {nextIndex, result} = nextPlayer(lobby, lobby.players[index])
     let {lobbyCondition, event, toWho} = checkCondition(lobby, nextIndex, result, socket.id, null, 'priest')
-    socket.join(room)
-    io.in(toWho).emit(event, lobbyCondition, playerAttacked.cardsOnHand[0])
+    // socket.join(room)
+    io.in(toWho).emit(event, lobbyCondition, lobby.players[playerAttackedIndex].cardsOnHand[0])
   })
 
 
@@ -401,9 +401,10 @@ io.on('connection', function(socket){
 
   socket.on('prince', (room, playerAttacked) => {
     let {lobby, player, playerIndex: playerAttackingIndex} = findCredentials(rooms, room, socket.id)
+    console.log(player)
     let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
     let discardingCard = playerAttacked.cardsOnHand[0]
-    lobby.players[playerAttackedIndex] = discardCard(playerAttacked, discardingCard)
+    lobby.players[playerAttackedIndex] = discardCard(lobby.players[playerAttackedIndex], discardingCard)
 
     if(discardingCard.card === 'Princess'){
       lobby.players[playerAttackedIndex].isOutOfRound = true
@@ -418,7 +419,7 @@ io.on('connection', function(socket){
       }
     }
     let card = findCard(player.cardsOnHand, "Prince")
-
+    console.log(card)
     lobby.game.playerAttacked  = playerAttacked.nickname
     lobby.game.playerAttacking = player.nickname
     lobby.game.cardPlayer      = card.card
