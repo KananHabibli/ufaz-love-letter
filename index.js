@@ -300,7 +300,7 @@ io.on('connection', function(socket){
     let {lobby, player: playerAttacking, playerIndex: playerAttackingIndex} = findCredentials(rooms, room, socket.id)
     let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
     let matched = false
-    if(playerAttacked.cardsOnHand[0].card === guess){
+    if(lobby.players[playerAttackedIndex].cardsOnHand[0].card === guess){
       lobby.players[playerAttackedIndex].isOutOfRound = true
       lobby.numberOfPlayersInRound--
       lobby.players[playerAttackedIndex] = discardCard(lobby.players[playerAttackedIndex], playerAttacked.cardsOnHand[0])
@@ -396,11 +396,11 @@ io.on('connection', function(socket){
     let discardingCard = playerAttacked.cardsOnHand[0]
     lobby.players[playerAttackedIndex] = discardCard(lobby.players[playerAttackedIndex], discardingCard)
 
-    if(discardingCard.card === 'Princess'){
+    if(discardingCard.card === "Princess"){
       lobby.players[playerAttackedIndex].isOutOfRound = true
       lobby.numberOfPlayersInRound--
     } else {
-      if(lobby.cards.gameCards.length != 0){
+      if(lobby.cards.gameCards.length > 0){
         lobby.players[playerAttackedIndex].cardsOnHand.push(lobby.cards.gameCards[0])
         lobby.cards.gameCards.splice(0, 1)
       } else {
@@ -433,7 +433,9 @@ io.on('connection', function(socket){
     player.cardsOnHand[otherCardIndex] = lobby.players[playerAttackedIndex].cardsOnHand[0]
     lobby.players[playerAttackedIndex].cardsOnHand[0] = otherCard
 
-    llobby.game.playerAttacked  = playerAttacked.nickname
+    let card = findCard(player.cardsOnHand, "King")
+
+    lobby.game.playerAttacked  = playerAttacked.nickname
     lobby.game.playerAttacking  = player.nickname
     lobby.game.cardPlayer       = card.card
 
@@ -449,6 +451,7 @@ io.on('connection', function(socket){
 
   socket.on('countess', room => {
     let {lobby, player, playerIndex} = findCredentials(rooms, room, socket.id)
+    console.log(player)
     let card = findCard(player.cardsOnHand, "Countess")
     lobby.players[playerIndex] = discardCard(player, card) 
     lobby.players[playerIndex].hisTurn = false
@@ -464,7 +467,7 @@ io.on('connection', function(socket){
     let {lobby, player, playerIndex} = findCredentials(rooms, room, socket.id)
     console.log(player.cardsOnHand.length)
     for (let i = 0; i <  lobby.players[playerIndex].cardsOnHand.length; i++) { 
-      lobby.players[playerIndex] = discardCard(player, player.cardsOnHand[i])
+      lobby.players[playerIndex] = discardCard(lobby.players[playerIndex], lobby.players[playerIndex].cardsOnHand[0])
     }
     lobby.players[playerIndex].isOutOfRound = true
     lobby.players[playerIndex].hisTurn = false
