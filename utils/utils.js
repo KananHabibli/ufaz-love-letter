@@ -119,13 +119,12 @@ const roundWinner = lobby => {
 }
 
 // lobbyCondition, event, toWho
-const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
+const checkCondition = (lobby, nextIndex, result, event) => {
     if(result == "Round is on"){
         lobby.players[nextIndex].hisTurn = true
         return {
             lobbyCondition: lobby,
-            event: `${event}Ready`,
-            toWho: lobby.room
+            event: `${event}Ready`
         }
     } else{
         let previousOwner = findOwner(lobby.players)
@@ -143,14 +142,12 @@ const checkCondition = (lobby, nextIndex, result, id, opponentID, event) => {
         if(lobby.players[nextIndex].roundsWon == lobby.goal){
             return {
                 lobbyCondition: lobby,
-                event: `gameOver`,
-                toWho: lobby.room
+                event: `gameOver`
             }
         } else {
             return {
                 lobbyCondition: lobby,
-                event: `roundOver`,
-                toWho: lobby.room
+                event: `roundOver`
             }
         }
     }

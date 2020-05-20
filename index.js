@@ -309,10 +309,10 @@ io.on('connection', function(socket){
 
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, playerAttacking)
     console.log(nextLobby)
-    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result, socket.id, null, 'guard')
+    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'guard')
     socket.join(room)
     console.log(matched)
-    io.in(toWho).emit(event, lobbyCondition, matched)
+    io.in(room).emit(event, lobbyCondition, matched)
     
   })
 
@@ -328,9 +328,8 @@ io.on('connection', function(socket){
 
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, lobby.players[index])
     console.log(nextLobby)
-    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result, socket.id, null, 'priest')
-    // socket.join(room)
-    io.in(toWho).emit(event, lobbyCondition, lobby.players[playerAttackedIndex].cardsOnHand[0])
+    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'priest')
+    io.in(room).emit(event, lobbyCondition, lobby.players[playerAttackedIndex].cardsOnHand[0])
   })
 
 
@@ -354,9 +353,8 @@ io.on('connection', function(socket){
     lobby.players[playerAttackingIndex].isProtected = false
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
     console.log(nextLobby)
-    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result, socket.id, null, 'baron')
-    socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition)
+    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'baron')
+    io.to(room).emit(event, lobbyCondition)
   } )
 
 
@@ -370,9 +368,8 @@ io.on('connection', function(socket){
     
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
     console.log(nextLobby)
-    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result, socket.id, null, 'handmaid')
-    socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition)
+    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'handmaid')
+    io.to(room).emit(event, lobbyCondition)
   })
 
 
@@ -402,9 +399,8 @@ io.on('connection', function(socket){
     lobby.players[playerAttackingIndex].hisTurn = false
     lobby.players[playerAttackingIndex].isProtected = false
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
-    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result, socket.id, null, 'prince')
-    socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition)
+    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'prince')
+    io.to(room).emit(event, lobbyCondition)
   })
 
 
@@ -424,9 +420,8 @@ io.on('connection', function(socket){
     lobby.players[playerIndex].isProtected = false
 
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
-    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result, socket.id, playerAttacked.id, 'king')
-    socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition)
+    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result, 'king')
+    io.to(room).emit(event, lobbyCondition)
   })
 
 
@@ -438,9 +433,8 @@ io.on('connection', function(socket){
     lobby.players[playerIndex].hisTurn = false
     lobby.players[playerIndex].isProtected = false
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
-    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result, socket.id, null, 'countess')
-    socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition)
+    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'countess')
+    io.to(room).emit(event, lobbyCondition)
   })
 
 
@@ -457,10 +451,9 @@ io.on('connection', function(socket){
     lobby.numberOfPlayersInRound--
     console.log(lobby.numberOfPlayersInRound)
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
-    let {lobbyCondition, event, toWho} = checkCondition(nextLobby, nextIndex, result,socket.id, null, 'princess')
+    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'princess')
     console.log(nextIndex + result)
-    socket.join(room)
-    io.to(toWho).emit(event, lobbyCondition)
+    io.to(room).emit(event, lobbyCondition)
   })
 
 
