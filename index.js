@@ -338,6 +338,11 @@ io.on('connection', function(socket){
     let {lobby, player, playerIndex: playerAttackingIndex} = findCredentials(rooms, room, socket.id)
     let playerAttackedIndex = findPlayerIndex(playerAttacked.nickname, lobby.players)
     let otherCard = player.cardsOnHand.find(card => card.card !== "Baron")
+
+    if(otherCard === undefined){
+      otherCard = lobby.players[playerAttackingIndex].cardsOnHand[0]
+    } 
+    
     if(otherCard.strength > playerAttacked.cardsOnHand[0].strength){
       lobby.players[playerAttackedIndex].isOutOfRound = true
       lobby.players[playerAttackedIndex] = discardCard(lobby.players[playerAttackedIndex], playerAttacked.cardsOnHand[0])
@@ -347,10 +352,13 @@ io.on('connection', function(socket){
       lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], otherCard)
       lobby.numberOfPlayersInRound--
     }
+
     let card = findCard(player.cardsOnHand, "Baron")
+
     lobby.players[playerAttackingIndex] = discardCard(lobby.players[playerAttackingIndex], card)
     lobby.players[playerAttackingIndex].hisTurn = false
     lobby.players[playerAttackingIndex].isProtected = false
+
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
     console.log(nextLobby)
     let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'baron')

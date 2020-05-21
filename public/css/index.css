@@ -35,15 +35,8 @@
 }
 
 body{
-    background: url("../assets/lobby-background.jpg");
-    background-size: cover;
+    background-color: rgb(100, 59, 59);
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100vw;
-    height: 100vh;
-    background-repeat: no-repeat;
 }
 
 .to--create__lobby, .to--join__lobby{
@@ -71,8 +64,6 @@ body{
     box-shadow: 0px 2px 6px 4px black;
 
 }
-
-
 
 @keyframes toggleMenu{
     0%{
