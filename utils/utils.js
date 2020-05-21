@@ -118,7 +118,8 @@ const roundWinner = lobby => {
     }
 }
 
-// lobbyCondition, event, toWho
+
+
 const checkCondition = (lobby, nextIndex, result, event) => {
     if(result == "Round is on"){
         lobby.players[nextIndex].hisTurn = true
