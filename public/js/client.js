@@ -423,6 +423,7 @@ socket.on('discardedCardReady', lobby => {
 
 socket.emit('new-user', room, nickname, number)
 socket.on('send-first-message', ( newPlayer, lobby,  status, rooms ) => {
+    console.log(lobby)
     const index = lobby.players.findIndex(elem => elem.nickname === nickname);
   players = lobby.players.slice(index,lobby.players.length).concat(lobby.players.slice(0,index));
   cards = lobby.cards
