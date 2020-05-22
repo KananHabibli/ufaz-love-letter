@@ -21,6 +21,9 @@ mongoose.connect(keys.mongoURI, {
 
 mongoose.set('useCreateIndex', true);
 
+// lodash
+const lodash = require('lodash')
+
 
 // cors
 var cors = require('cors')
@@ -184,21 +187,7 @@ io.on('connection', function(socket){
       // Checking if the user is trying to create the lobby or joining it 
     }else if(number !== null) {
       let deck = await Cards.find({})
-      let mymap = new Map();
-      let distinctCards = deck.filter(el => { 
-          const val = mymap.get(el.strength); 
-          if(val) { 
-              if(el.id < val) { 
-                  mymap.delete(el.strength); 
-                  mymap.set(el.strength, el.id); 
-                  return true; 
-              } else { 
-                  return false; 
-              } 
-          } 
-          mymap.set(el.strength, el.id); 
-          return true; 
-      });
+      let distinctCards = lodash.uniqBy(deck, "strength")
       let discardedCards = []
       let goal
       deck = shuffleCards(deck)
