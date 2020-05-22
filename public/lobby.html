@@ -6,48 +6,68 @@
     <title>Document</title>
     <link rel="stylesheet" href="./css/lobby.css">
     <link rel="stylesheet" href="./css/lobbyCards.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
 
     <div class="container">
-        <div id="players"></div>
-        <button class="btn btn-success btn-block w-50 mb-3" id="drawCard">Draw a Card</button>
-        <button class="btn btn-secondary btn-block w-50 mb-3" id="drawAll">Draw for all</button>
-        <select class="mt-3" id="chooseDiscardCard">
-            <option value="Guard">Guard</option>
-            <option value="Priest">Priest</option>
-            <option value="Baron">Baron</option>
-            <option value="Handmaid">Handmaid</option>
-            <option value="Prince">Prince</option>
-            <option value="King">King</option>
-            <option value="Countess">Countess</option>
-            <option value="Princess">Princess</option>
-        </select>
-        <button class="btn btn-danger btn-block w-50 mb-3" id="discardCard">Discard a card</button>
-        <select class="mt-3" id="guessCard">
-            <option value="Priest">Priest</option>
-            <option value="Baron">Baron</option>
-            <option value="Handmaid">Handmaid</option>
-            <option value="Prince">Prince</option>
-            <option value="King">King</option>
-            <option value="Countess">Countess</option>
-            <option value="Princess">Princess</option>
-        </select>
-        <button class="btn btn-warning btn-block w-50 mb-3" id="guard">Guard</button>
-        <button class="btn btn-info btn-block w-50 mb-3" id="priest">Priest</button>
-        <button class="btn btn-dark btn-block w-50 mb-3" id="baron">Baron</button>
-        <button class="btn btn-outline-success btn-block w-50 mb-3" id="handmaid">Handmaid</button>
-        <button class="btn btn-outline-info btn-block w-50 mb-3" id="prince">Prince</button>
-        <button class="btn btn-outline-secondary btn-block w-50 mb-3" id="king">King</button>
-        <button class="btn btn-outline-warning btn-block w-50 mb-3" id="countess">Countess</button>
-        <button class="btn btn-outline-danger btn-block w-50 mb-3" id="princess">princess</button>
-        <button class="btn btn-danger btn-block mb-3" id="reset">Reset</button>
+       <div id="players">
+<div class="Enemies">
+
+</div>
+<div class="MyPlayer">
+    <div class="player-roundsWon"></div>
+    <div class="MyPlayer--Cards">
+        <div class="MyPlayer--CardsDiscarded">
+        </div>
+       
+        <div class="MyPlayer--CardsOnHand">
+        </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <div class="MyPlayer--title">
+        <h3 class="MyPlayer--name"></h3>
+        <div class="hisTurn-Comp-Unmount"></div>
+    </div>
+</div>
+       </div>
+       <div class="cardHolder">
+           <div class="cardHolder-container"></div>
+           <p class="cardHolder-number"></p>
+       </div>
+       <div class="Menu">
+<button class="Menu--Exit">&#10008;</button>
+<div class="Menu--container">
+    <label for="Menu--Button--Fullscreen">Enable/Disable Fullscreen</label>
+    <button id="Menu--Button--Fullscreen">FullScreen</button>
+    <hr />
+</div>
+        <button class="Menu--Toggle">&#x276F;</button>
+       </div>
+       <div class="backdrop"></div>
+       <div class="backdrop-waitingPlayers">
+           <h1>Waiting for other players</h1>
+           <div class="loader">Loading...</div>
+       </div>
+       <div class="backdrop-guard">
+        <div class="backdrop-guard_container"></div>
+       </div>
+       <div class="backdrop-roundOver">
+           <h1>Round over</h1>
+           <h3 class="backdrop-roundOver_winner"></h3>
+         
+        </div>
+        <div class="backdrop-attacking">
+            <div class="backdrop-attacking_container">
+                <div class="backdrop-attacking_container-cardPlayed"></div>
+                <div class="backdrop-attacking_container-players">
+                    <h1 class="backdrop-attacking_container-playerAttacking"></h1>
+                    <!-- <div class="backdrop-attacking_container-matched"></div> -->
+                    <h1 class="backdrop-attacking_container-playerAttacked"></h1>
+                </div>
+        </div>
+       </div>
+</div>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/styles.js"></script>
     <script src="/js/client.js"></script>
 </body>
 </html>

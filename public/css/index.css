@@ -15,6 +15,7 @@
     flex-direction: column;
     margin: auto;
     padding: 1rem;
+    overflow: hidden;
     margin-top: 5rem;
     align-items: center;
     box-shadow: 0px 2px 8px 4px rgba(0, 0, 0, 0.808);
@@ -35,8 +36,28 @@
 }
 
 body{
-    background-color: rgb(100, 59, 59);
+    background: url("../assets/lobby-background.jpg");
+    background-size: cover;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-repeat: no-repeat;
+}
+
+.to--create__lobby{
+    opacity: 0;
+    transform: translateX(-100vw);
+    animation: toggleToCreate 0.5s ease 0s forwards;
+}
+
+.to--join__lobby{
+    opacity: 0;
+    transform: translateX(100vw);
+    animation: toggleToJoin 0.5s ease 0s forwards;
+
 }
 
 .to--create__lobby, .to--join__lobby{
@@ -65,6 +86,8 @@ body{
 
 }
 
+
+
 @keyframes toggleMenu{
     0%{
         opacity: 0;
@@ -73,6 +96,30 @@ body{
     100%{
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+
+
+@keyframes toggleToCreate{
+    0%{
+        opacity: 0;
+        transform: translateX(-100vw);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toggleToJoin{
+    0%{
+        opacity: 0;
+        transform: translateX(100vw);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0);
     }
 }
 

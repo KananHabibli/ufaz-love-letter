@@ -7,89 +7,503 @@
 body{
     font-family: serif;
     font-style: italic;
-}
-
-#game-container{
-    width: 100vw;
     height: 100vh;
-    background: radial-gradient(rgba(255, 58, 58, 0.274),rgba(61, 16, 16, 0.185),rgba(0, 0, 0, 0.288)), url("../assets/game-background.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    display: flex;
+    width: 100vw;
     overflow: hidden;
-    padding-top: 0.5rem;
-    align-items: center;
 }
 
-#Players{
+.container{
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    background: url("../assets/game-background.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+}
+
+.cardHolder{
+    width: 60px;
+    height: 100px;
+border: 2px solid yellow;
+display: flex;
+overflow: hidden;
+flex-direction: column;
+align-items: flex-start;
+background-color: maroon;
+box-shadow: 0px -5px 10px 2px black inset;
+}
+
+#players{
     width: 100%;
     height: 100%;
     display: flex;
+    padding: 0.4rem;
     flex-direction: column;
-    align-items: center;
-    padding: 0.5rem;
     justify-content: space-between;
 }
 
-#cardholder{
-    width: 70px;
-    height: 100px;
-    background: maroon;
-    box-shadow: 0px 2px 4px 2px black inset;
-    border: 2px solid white;
+.MyPlayer{
+    align-self: flex-end;
+    color: white;
 }
 
-
-#Enemies{
-width: 100%;
-display: flex;
-justify-content: space-between;
+.Enemies{
+    color: white;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
-
 
 .enemy{
-    animation: toggleEnemies 0.3s ease 0s forwards; 
+    display: flex;
+    flex-direction: column;
+}
+.enemy-cards-discarded{
+    display: flex;
+    max-width: 250px;
+    flex-wrap: wrap;
 }
 
-.enemy h1{
-    color: white;
+.enemy-title{
+    border-left: 4px solid rgb(185, 120, 0);
+    border-top: 4px solid rgb(234, 152, 0);
+    border-bottom: 4px solid rgb(58, 37, 0);
+    border-right: 4px solid rgb(102, 66, 0);
+    background:linear-gradient(to bottom right, rgba(0, 0, 0, 0.561),rgba(238, 3, 42, 0.753),rgb(255, 2, 44));
+    margin: 0 5px;
     font-size: 1.5rem;
-    border-radius: 5px;
-    border-left: 5px solid rgb(196, 127, 0);
-    border-top: 5px solid rgb(253, 188, 67);
-    border-bottom: 5px solid rgb(51, 33, 1);
-    border-right: 5px solid rgb(121, 78, 0);
-    background: linear-gradient(to right, rgba(168, 0, 0, 0.658),rgb(117, 0, 0));
-    padding: 0.5rem;
-    box-shadow: 0px 2px 4px 2px black;
+    padding: 0.3rem 0.4rem;
+    width: max-content;
 }
 
-#MyPlayer{
+.card-discarded{
+    background-image: url("../assets/king.jpg");
+}
+
+.hisTurn--Comp{
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(to bottom, rgb(255, 238, 0),rgb(201, 90, 0));
+    border-radius: 50%;
+    border: 3px solid rgb(100, 0, 0);
+    box-shadow: 0px 3px 6px 3px black;
+    transform: scale(0,0);
+    animation: toggleTurnComp 0.3s ease 0s forwards;
+}
+
+.hisTurn--Comp-Unmount{
+    width: 0;
+    overflow: hidden;
+    height: 0;
+    display: none;
+}
+
+.MyPlayer--title{
+    display: flex;
+    width: max-content;
+align-self: flex-end;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.MyPlayer--title h3{
+    margin: 0.5rem;
+    border-left: 4px solid rgb(185, 120, 0);
+    border-top: 4px solid rgb(234, 152, 0);
+    border-bottom: 4px solid rgb(58, 37, 0);
+    border-right: 4px solid rgb(102, 66, 0);
+    background:linear-gradient(to bottom right, rgba(0, 0, 0, 0.561),rgba(238, 3, 42, 0.753),rgb(255, 2, 44));
+    font-size: 1.5rem;
+    padding: 0.3rem 0.4rem;
+    width: max-content;
+}
+
+.backdrop{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    display: none;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.61),rgba(0, 0, 0, 0.616));
+}
+
+.player-roundsWon{
+    display: flex;
+    justify-content: space-between;
+    width: 180px;
+    align-self: flex-end;
+    background-color: rgba(99, 99, 99, 0.555);
+    padding: 2px;
+    margin: 4px 0;
+    border-radius: 5px;
+    border: 2px solid rgba(128, 128, 128, 0.705);
+}
+
+.backdrop-guard{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    justify-content: center;
+    align-items: center;
+    z-index: 70;
+    display: none;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.61),rgba(255, 255, 255, 0.616));   
+}
+
+
+.backdrop-waitingPlayers{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 70;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.61),rgba(0, 0, 0, 0.616));
+}
+
+
+
+.backdrop-waitingPlayers h1{
+    color: white;
+    font-weight: bold;
+}
+
+
+.backdrop-roundOver{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 70;
+    background: black;
+    opacity: 0;
+    animation: toggleBackdrop 0.3s ease 0s forwards;
+}
+
+
+.backdrop-attacking{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 70;
+    background: rgba(255, 255, 255, 0.822);
+    opacity: 0;
+    animation: toggleBackdrop 0.3s ease 0s forwards;
+}
+
+
+
+.backdrop-attacking_container{
+    max-width: 500px;
+    width: 90%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgb(136, 41, 4);
+    border-left: 10px solid rgb(185, 120, 0);
+    border-top: 10px solid rgb(234, 152, 0);
+    border-bottom: 10px solid rgb(58, 37, 0);
+    border-right: 10px solid rgb(102, 66, 0);
+}
+
+.backdrop-attacking_container-players{
+display: flex;
+align-items: flex-end;
+}
+
+.backdrop-attacking_container-matched{
+    width: 30px;
+    height: 30px;
+    border: 2px solid white;
+    background-color: rgb(0, 77, 0);
+    color: white;
+    box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.753);
+}
+
+.backdrop-attacking_container h1{
+    padding: 5px;
+    color: white;
+    background-color: rgb(128, 73, 0);
+    box-shadow: 2px 3px 4px 2px rgba(0, 0, 0, 0.479);
+    border-left: 2px solid rgb(185, 120, 0);
+    border-top: 2x solid rgb(234, 152, 0);
+    border-bottom: 2px solid rgb(58, 37, 0);
+    border-right: 2px solid rgb(102, 66, 0);
+    font-weight: bold;
+    font-style: italic;
+    font-family: serif;
+}
+
+.backdrop-attacking_container-cardPlayed{
+    width: 250px;
+    height: 320px;
+    border-radius: 10px;
+    background-size: cover;
+    box-shadow: 0px 4px 6px 2px black;
+    margin: 0 0.5rem;
+    border-left: 4px solid rgb(185, 120, 0);
+    border-top: 4x solid rgb(234, 152, 0);
+    border-bottom: 4px solid rgb(58, 37, 0);
+    border-right: 4px solid rgb(102, 66, 0);
+    background-position: center;
+
+}
+
+.backdrop-roundOver h1{
+    color: white;
+    font-weight: 900;
+    font-size: 4rem;
+}
+
+.backdrop-roundOver h3{
+    color: white;
+    font-weight: 900;
+}
+
+@keyframes toggleTurnComp {
+    0%{
+        transform: scale(0,0);
+    }
+    100%{
+        transform: scale(1,1);
+    }
+}
+
+.loader,
+.loader:before,
+.loader:after {
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation: load7 1.8s infinite ease-in-out;
+  animation: load7 1.8s infinite ease-in-out;
+}
+.loader {
+  color: #ffffff;
+  font-size: 10px;
+  margin: 80px auto;
+  position: relative;
+  text-indent: -9999em;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+.loader:before,
+.loader:after {
+  content: '';
+  position: absolute;
+  top: 0;
+}
+.loader:before {
+  left: -3.5em;
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+.loader:after {
+  left: 3.5em;
+}
+@-webkit-keyframes load7 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 2.5em 0 -1.3em;
+  }
+  40% {
+    box-shadow: 0 2.5em 0 0;
+  }
+}
+@keyframes load7 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 2.5em 0 -1.3em;
+  }
+  40% {
+    box-shadow: 0 2.5em 0 0;
+  }
+}
+
+
+.Menu{
+    width: 60%;
+    max-width: 400px;
+    height: 100vh;
+    background: radial-gradient(rgb(255, 83, 83),rgb(180, 2, 2),rgb(51, 0, 0));
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-right: 2px solid white;
+    z-index: 50;
+    transition: 0.4s ease 0s;
+    padding: 0.5rem;
+    display: flex;
+flex-direction: column;
+align-items: center;
+    transform: translateX(-100%);
+}
+
+.Menu--Toggle{
+    position: absolute;
+    top: 50%;
+width: 50px;
+height: 50px;
+border: none;
+background: linear-gradient(to bottom,red, rgb(37, 0, 0), red);
+right: -40px;
+color: white;
+border: 3px solid orange;
+border-left: none;
+cursor: pointer;
+border-top-right-radius: 50%;
+border-bottom-right-radius: 50%;
+font-size: 1.3rem;
+box-shadow: 0px 2px 4px 2px rgba(255, 187, 0, 0.459);
+transition: 0.2s ease 0s;
+
+}
+
+.Menu--Toggle:hover,
+.Menu--Toggle:active{
+    background: red;
+}
+
+.Menu--Toggle:focus{
+    outline: none;
+}
+
+.Menu--Exit{
+    padding: 5px;
+    background-color: rgb(255, 119, 119);
+    width: 30px;
+    border: 2px solid white;
+    height: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0px 0px 4px 2px black;
     align-self: flex-end;
 }
 
-#MyPlayer--Name{
-    color: white;
-    font-style: italic;
-    padding: 0.5rem;
-    border-left: 5px solid rgb(196, 127, 0);
-    border-top: 5px solid rgb(253, 188, 67);
-    border-bottom: 5px solid rgb(51, 33, 1);
-    border-right: 5px solid rgb(121, 78, 0);
+.Menu--Exit:focus{
+    outline: none;
+}
+
+.Menu--Exit:hover,
+.Menu--Exit:active{
     background-color: maroon;
-    font-size: 1.5rem;
+    color: white;
+}
+
+.Menu--container{
+    display: flex;
+    width: 90%;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.Menu--container button{
+    padding: 5px;
+    border-left: 4px solid rgb(185, 120, 0);
+    border-top: 4px solid rgb(234, 152, 0);
+    border-bottom: 4px solid rgb(58, 37, 0);
+    border-right: 4px solid rgb(102, 66, 0);
+    color: white;
+    background-color: maroon;
+    font-weight: bold;
+    font-size: 1rem;
+    font-family: serif;
+    font-style: italic;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.Menu hr{
+    width: 100%;
+    margin: 0.6rem 0;
+    background-color: white;
+}
+
+.Menu--container button:hover,
+.Menu--container button:active{
+    background-color: rgb(68, 0, 0);
+}
+.Menu--container button:focus{
+    outline: none;
 }
 
 
+.Menu--container label{
+    margin-top: 2rem;
+    color: rgba(0, 0, 0, 0.486);
+}
 
-@keyframes toggleEnemies{
+.player-options{
+    width: max-content;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 0.6rem;
+}
+
+
+.player-protect{
+width: 30px;
+height: 30px;
+background-image: url("../assets/shield.png");
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+margin: 0px 5px;
+}
+
+.backdrop-guard_container{
+    display: flex;
+    width: 80%;
+    height: 90vh;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 5px;
+    border-left: 4px solid rgb(185, 120, 0);
+    border-top: 4px solid rgb(234, 152, 0);
+    border-bottom: 4px solid rgb(58, 37, 0);
+    border-right: 4px solid rgb(102, 66, 0);
+    background-color: maroon;
+}
+
+@keyframes toggleBackdrop{
     0%{
-        transform: translateY(-100vh);
         opacity: 0;
     }
     100%{
-        transform: translateY(0);
         opacity: 1;
     }
 }

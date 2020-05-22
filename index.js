@@ -483,7 +483,7 @@ io.on('connection', function(socket){
 
     lobby.game.playerAttacking = lobby.players[playerIndex].nickname
     lobby.game.playerAttacked  = ""
-    lobby.game.cardPlayer      = "Baron"
+    lobby.game.cardPlayer      = "Countess"
 
     lobby.players[playerIndex] = discardCard(player, card) 
     lobby.players[playerIndex].hisTurn = false
