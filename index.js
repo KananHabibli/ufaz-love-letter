@@ -187,7 +187,11 @@ io.on('connection', function(socket){
       // Checking if the user is trying to create the lobby or joining it 
     }else if(number !== null) {
       let deck = await Cards.find({})
+
       let distinctCards = lodash.uniqBy(deck, "strength")
+      distinctCards.sort((a, b) => a.strength - b.strength)
+      distinctCards.shift()
+      
       let discardedCards = []
       let goal
       deck = shuffleCards(deck)
