@@ -286,7 +286,7 @@ io.on('connection', function(socket){
     let discardcard  = findCard(player.cardsOnHand, card)
 
     lobby.players[playerIndex] = discardCard(player, discardcard)
-
+    lobby.players[playerIndex].hisTurn = false
     if(lobby.cards.gameCards.length > 0){
       let nextPlayer = lobby.players.find(player => player.isOutOfRound == false && player.nickname !== lobby.players[playerIndex].nickname)
       let nextPlayerIndex = findPlayerIndex(nextPlayer.nickname, lobby.players)
