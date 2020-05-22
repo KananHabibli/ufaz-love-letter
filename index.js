@@ -543,6 +543,7 @@ io.on('connection', function(socket){
       player.isOutOfRound = false
       player.cardsOnHand = []
       player.cardsDiscarded = []
+      player.isProtected = false
     })
 
     lobby.numberOfPlayersInRound = parseInt(lobby.numberOfPlayers)
