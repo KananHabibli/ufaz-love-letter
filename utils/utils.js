@@ -28,7 +28,7 @@ const findPlayerByName = (lobby, nickname) => lobby.players.find(player => playe
 
 const findLobby        = (rooms, room) => rooms.find(roomValue => roomValue.room == room)
 
-const findOwner = players => players.find(player => player.isOwner == true)
+const findOwner        = players => players.find(player => player.isOwner == true)
 
 const findCredentials = (rooms, room, id) => {
     let lobby  = findLobby(rooms, room)
@@ -154,6 +154,11 @@ const checkCondition = (lobby, nextIndex, result, event) => {
     }
 }
 
+const checkScores = lobby => {
+    return lobby.players.some(player => player.roundsWon === lobby.goal)
+}
+
+
 module.exports = {
     randomNumber,
     shuffleCards,
@@ -169,5 +174,6 @@ module.exports = {
     nextPlayer,
     roundWinner,
     checkCondition,
-    checkDiscard
+    checkDiscard,
+    checkScores
 }

@@ -121,7 +121,8 @@ const { randomNumber,
         nextPlayer,
         roundWinner,
         checkCondition,
-        checkDiscard } = require('./utils/utils')
+        checkDiscard,
+        checkScores } = require('./utils/utils')
 
 // Main route
 app.get('/',function(req,res) {
@@ -292,7 +293,24 @@ io.on('connection', function(socket){
     let discardcard  = findCard(player.cardsOnHand, card)
 
     lobby.players[playerIndex] = discardCard(player, discardcard)
-    io.to(room).emit('discardedCardReady', lobby)
+
+    if(lobby.cards.gameCards.length > 0){
+      let nextPlayer = lobby.players.find(player => player.isOutOfRound == false && player.nickname !== lobby.players[playerIndex].nickname)
+      let nextPlayerIndex = findPlayerIndex(nextPlayer.nickname, lobby.players)
+      lobby.players[nextPlayerIndex].hisTurn = true
+      lobby.players[nextPlayerIndex].cardsOnHand.push(lobby.cards.gameCards[0])
+      lobby.cards.gameCards.splice(0, 1)
+      io.to(room).emit('discardedCardReady', lobby)
+    } else {
+      let {lobby: winnerLobby} = roundWinner(lobby)
+      let result = checkScores(winnerLobby)
+      if(result){
+        io.to(room).emit('gameOver', winnerLobby)
+      } else {
+        io.to(room).emit('roundOver', winnerLobby)
+      }
+    }
+    
   })
 
 
