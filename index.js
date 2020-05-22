@@ -295,12 +295,12 @@ io.on('connection', function(socket){
       lobby.cards.gameCards.splice(0, 1)
       io.to(room).emit('discardedCardReady', lobby)
     } else {
-      let {lobby: winnerLobby} = roundWinner(lobby)
+      let {lobby: winnerLobby, winner} = roundWinner(lobby)
       let result = checkScores(winnerLobby)
       if(result){
-        io.to(room).emit('gameOver', winnerLobby)
+        io.to(room).emit('gameOver', winnerLobby, winner)
       } else {
-        io.to(room).emit('roundOver', winnerLobby)
+        io.to(room).emit('roundOver', winnerLobby, winner)
       }
     }
     
@@ -329,10 +329,10 @@ io.on('connection', function(socket){
 
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, playerAttacking)
     console.log(nextLobby)
-    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'guard')
+    let {winner, lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'guard')
     socket.join(room)
     console.log(matched)
-    io.in(room).emit(event, lobbyCondition, matched)
+    io.in(room).emit(event, lobbyCondition, matched, winner)
     
   })
 
@@ -353,8 +353,8 @@ io.on('connection', function(socket){
 
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, lobby.players[index])
     console.log(nextLobby)
-    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'priest')
-    io.in(room).emit(event, lobbyCondition, lobby.players[playerAttackedIndex].cardsOnHand[0])
+    let {winner, lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'priest')
+    io.in(room).emit(event, lobbyCondition, lobby.players[playerAttackedIndex].cardsOnHand[0], winner)
   })
 
 
@@ -391,8 +391,8 @@ io.on('connection', function(socket){
 
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
     console.log(nextLobby)
-    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'baron')
-    io.to(room).emit(event, lobbyCondition)
+    let {winner, lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'baron')
+    io.to(room).emit(event, lobbyCondition, winner)
   } )
 
 
@@ -411,8 +411,8 @@ io.on('connection', function(socket){
     
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
     console.log(nextLobby)
-    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'handmaid')
-    io.to(room).emit(event, lobbyCondition)
+    let {winner, lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'handmaid')
+    io.to(room).emit(event, lobbyCondition, winner)
   })
 
 
@@ -446,8 +446,8 @@ io.on('connection', function(socket){
     lobby.players[playerAttackingIndex].hisTurn = false
     lobby.players[playerAttackingIndex].isProtected = false
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
-    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'prince')
-    io.to(room).emit(event, lobbyCondition)
+    let {winner, lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'prince')
+    io.to(room).emit(event, lobbyCondition, winner)
   })
 
 
@@ -466,13 +466,13 @@ io.on('connection', function(socket){
     lobby.game.playerAttacking = lobby.players[playerIndex].nickname
     lobby.game.cardPlayer      = "King"
 
-    lobby.players[playerIndex] = discardCard(player, findCard(player.cardsOnHand, "King"))
+    lobby.players[playerIndex] = discardCard(player, card)
     lobby.players[playerIndex].hisTurn = false
     lobby.players[playerIndex].isProtected = false
 
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
-    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'king')
-    io.to(room).emit(event, lobbyCondition)
+    let {winner, lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'king')
+    io.to(room).emit(event, lobbyCondition, winner)
   })
 
 
@@ -489,8 +489,8 @@ io.on('connection', function(socket){
     lobby.players[playerIndex].hisTurn = false
     lobby.players[playerIndex].isProtected = false
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
-    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'countess')
-    io.to(room).emit(event, lobbyCondition)
+    let {winner, lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'countess')
+    io.to(room).emit(event, lobbyCondition, winner)
   })
 
 
@@ -512,9 +512,9 @@ io.on('connection', function(socket){
     lobby.numberOfPlayersInRound--
     console.log(lobby.numberOfPlayersInRound)
     let {nextLobby, nextIndex, result} = nextPlayer(lobby, player)
-    let {lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'princess')
+    let {winner, lobbyCondition, event} = checkCondition(nextLobby, nextIndex, result, 'princess')
     console.log(nextIndex + result)
-    io.to(room).emit(event, lobbyCondition)
+    io.to(room).emit(event, lobbyCondition, winner)
   })
 
 

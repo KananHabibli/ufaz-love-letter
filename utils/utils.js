@@ -124,6 +124,7 @@ const checkCondition = (lobby, nextIndex, result, event) => {
     if(result == "Round is on"){
         lobby.players[nextIndex].hisTurn = true
         return {
+            winner: "",
             lobbyCondition: lobby,
             event: `${event}Ready`
         }
@@ -142,11 +143,13 @@ const checkCondition = (lobby, nextIndex, result, event) => {
         })
         if(lobby.players[nextIndex].roundsWon == lobby.goal){
             return {
+                winner: lobby.players[nextIndex],
                 lobbyCondition: lobby,
                 event: `gameOver`
             }
         } else {
             return {
+                winner: lobby.players[nextIndex],
                 lobbyCondition: lobby,
                 event: `roundOver`
             }
