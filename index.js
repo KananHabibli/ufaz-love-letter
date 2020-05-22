@@ -22,7 +22,7 @@ mongoose.connect(keys.mongoURI, {
 mongoose.set('useCreateIndex', true);
 
 // lodash
-const lodash = require('lodash')
+const lodash = require('lodash/array')
 
 
 // cors
