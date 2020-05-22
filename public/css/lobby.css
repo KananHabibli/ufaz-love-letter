@@ -4,6 +4,46 @@
     box-sizing: border-box;
 }
 
+
+.game-message{
+    width: 100vw;
+    padding: 10px;
+    background-color: rgb(59, 0, 0);
+    position: fixed;
+    border-left: 2px solid orange;
+    border-bottom: 2px solid orange;
+    border-right: 2px solid orange;
+    top: 0;
+    transition: 0.3s ease 0s;
+    transform: translateY(-100%);
+    left: 0;
+    display: flex;
+    color: white;
+    z-index: 100;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.hoverElem{
+    border-radius: 5px;
+    padding: 5px;
+transition: 0.2s ease 0s;
+cursor: pointer;
+}
+
+.hoverElem:hover,
+.hoverElem:active{
+background-color: rgba(128, 128, 128, 0.493);
+}
+
+.game-message button{
+    padding: 5px;
+}
+
+.game-message button:focus{
+    outline: none;
+}
+
 body{
     font-family: serif;
     font-style: italic;

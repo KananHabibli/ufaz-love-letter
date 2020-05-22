@@ -1,3 +1,4 @@
+
 const toggleMenuButton = document.querySelector('.Menu--Toggle')
 const Menu = document.querySelector('.Menu')
 const Backdrop = document.querySelector('.backdrop')
@@ -43,5 +44,3 @@ exitMenuButton.addEventListener('click', function(){
 })
 
 fullScreenButton.addEventListener('click', toFullscreen)
-
-

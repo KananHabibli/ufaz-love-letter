@@ -43,9 +43,18 @@ const backdropAttacking = document.querySelector('.backdrop-attacking_container-
 const backdropAttacked = document.querySelector('.backdrop-attacking_container-playerAttacked')
 const backdropAttackCard = document.querySelector('.backdrop-attacking_container-cardPlayed')
 const backdropRoundOverTitle = document.querySelector('.backdrop-roundOver_title')
+const gameMessage = document.querySelector('.game-message')
+const gameMessageButton = document.querySelector('.game-message button')
+const gameMessageMessage = document.querySelector('.game-message_message')
 
 //This function will be used every time any card is used. It changes dom according to new state.
+
+gameMessageButton.addEventListener('click', () => {
+    gameMessage.style.transform = ''
+})
+
 const drawCards = (lobby) => {
+    gameMessage.style.transform = ''
     const index = lobby.players.findIndex(elem => elem.nickname === nickname);
     players = lobby.players.slice(index,lobby.players.length).concat(lobby.players.slice(0,index));
     cards = lobby.cards
@@ -61,7 +70,6 @@ const drawCards = (lobby) => {
   Enemies.innerHTML = ''
   MyPlayerRoundsWon.innerHTML = ''
   enemyNodes = []
-      console.log("DrawCards()",  lobby)
       CardHolder.innerHTML = ''
       lobby.cards.gameCards.forEach((elem) => {
           const cardDeck = document.createElement('div')
@@ -96,13 +104,12 @@ const drawCards = (lobby) => {
                 let newEnemyNode = enemyNode.cloneNode(true)
                 Enemies.replaceChild(newEnemyNode, enemyNode)
                 enemyNodes.splice(enemyNodeInd,1,newEnemyNode)
-    
+    newEnemyNode.classList.add('hoverElem')
             })
-                        console.log('card clicked')
                         if(player.hisTurn){
                    if(!player.isOutOfRound){
                                 
-                    let allPlayersProtected = players.slice(1).every((elem) => elem.isProtected)
+                    let allPlayersProtected = players.slice(1).every((elem) => elem.isProtected || elem.isOutOfRound)
                     if(allPlayersProtected){
                         if(crdOnhd.strength === 8){
                             socket.emit('princess', room)
@@ -111,15 +118,17 @@ const drawCards = (lobby) => {
                         }
                     }else{
 if(crdOnhd.strength === 1){
-            console.log('Guard is CLicked')
-            alert("Select Player To Guess")
             enemyNodes.forEach((enemyNode, enemyInd) => {
             enemyNode.addEventListener('click', function(){
             if(players[enemyInd + 1].isProtected){
-            alert('This player is protected')
-            }else{
-            console.log(room)
-            console.log(players[enemyInd + 1])
+                gameMessage.style.transform = 'translateY(0)'
+gameMessageMessage.innerHTML = 'This player is protected'
+            }else if(players[enemyInd + 1].isOutOfRound){
+                gameMessage.style.transform = 'translateY(0)'
+                gameMessageMessage.innerHTML = 'This player is out of round'
+            }
+            
+            else{
             backdropGuardContainer.innerHTML = ''
             backdropGuard.style.display = 'flex'
             let guardGuess = ''
@@ -138,57 +147,79 @@ if(crdOnhd.strength === 1){
             })
             })
             }else if(crdOnhd.strength === 2){
-            alert("Select Player To Watch His Hand")
             enemyNodes.forEach((enemyNode, ind) => {
             enemyNode.addEventListener('click', function(){
             if(players[ind + 1].isProtected){
-                alert('This player is protected')
-                     }else{
+gameMessage.style.transform = 'translateY(0)'
+gameMessageMessage.innerHTML = 'This player is protected'
+            }
+            else if(players[ind + 1].isOutOfRound){
+                gameMessage.style.transform = 'translateY(0)'
+                gameMessageMessage.innerHTML = 'This player is out of round'
+            }
+            else{
             socket.emit('priest',room, players[ind + 1])
                      }
             })
             }) 
             }else if(crdOnhd.strength === 3){
-            console.log('Baron Clicked')
-            alert("Select Player To Compare Your Hand")
             enemyNodes.forEach((enemyNode, ind) => {
             enemyNode.addEventListener('click', function(){
             if(players[ind + 1].isProtected){
-                alert('This player is protected')
-                     }else{
-              console.log(players[ind + 1])
-              console.log(room)
+                gameMessage.style.transform = 'translateY(0)'
+                gameMessageMessage.innerHTML = 'This player is protected'
+              }
+              else if(players[ind + 1].isOutOfRound){
+                gameMessage.style.transform = 'translateY(0)'
+                gameMessageMessage.innerHTML = 'This player is out of round'
+            }
+              else{
             socket.emit('baron', room, players[ind + 1])
                      }
             })
             }) 
             }else if(crdOnhd.strength === 4){
-            alert('You are protected')
             socket.emit('handmaid', room)
             }
             else if(crdOnhd.strength === 5){
             if(player.cardsOnHand[0].card !== player.cardsOnHand[1].card){
             const index = player.cardsOnHand.findIndex((elem) => elem.card !== crdOnhd.card)
             if(player.cardsOnHand[index].strength === 7){
-                alert("You should discard countess")
-            }else{
-                alert("Select Player To Discard His Card And Take New One")
+                gameMessage.style.transform = 'translateY(0)'
+                gameMessageMessage.innerHTML = 'You should discard countess'
+                        }else{
                 enemyNodes.forEach((enemyNode, ind) => {
-                  enemyNode.addEventListener('click', function(){
-                      console.log(players[ind + 1])
-                      console.log(room)
-                      socket.emit('prince', room, players[ind + 1])
+                  enemyNode.addEventListener('click', function(){ 
+                    if(players[ind + 1].isProtected){
+                        gameMessage.style.transform = 'translateY(0)'
+                        gameMessageMessage.innerHTML = 'This player is protected'
+                      }else if(players[ind + 1].isOutOfRound){
+                        gameMessage.style.transform = 'translateY(0)'
+                        gameMessageMessage.innerHTML = 'This player is out of round'
+                    }
+                      
+                      else{
+                        socket.emit('prince', room, players[ind + 1])
+                    }
                 })
                 }) 
             }
             }else{
-            alert("Select Player To Discard His Card And Take New One")
             enemyNodes.forEach((enemyNode, ind) => {
               enemyNode.addEventListener('click', function(){
-                  console.log(players[ind + 1])
-                  console.log(room)
-                  socket.emit('prince', room, players[ind + 1])
-            })
+ enemyNode.addEventListener('click', function(){ 
+                    if(players[ind + 1].isProtected){
+                        gameMessage.style.transform = 'translateY(0)'
+                        gameMessageMessage.innerHTML = 'This player is protected'
+                      }
+                      else if(players[ind + 1].isOutOfRound){
+                        gameMessage.style.transform = 'translateY(0)'
+                        gameMessageMessage.innerHTML = 'This player is out of round'
+                    }
+                      else{
+                        socket.emit('prince', room, players[ind + 1])
+                    }
+                })            })
             }) 
             }                    
             }
@@ -196,32 +227,37 @@ if(crdOnhd.strength === 1){
             if(player.cardsOnHand[0].card !== player.cardsOnHand[1].card){
             const index = player.cardsOnHand.findIndex((elem) => elem.card !== crdOnhd.card)
             if(player.cardsOnHand[index].strength === 7){
-            alert("You should discard countess")
-            }else{
-            console.log('King is Clicked')
-            alert("Select Player To Trade Your Hands")
+                gameMessage.style.transform = 'translateY(0)'
+                gameMessageMessage.innerHTML = 'You should discard countess'
+                        }else{
             enemyNodes.forEach((enemyNode, ind) => {
               enemyNode.addEventListener('click', function(){
                 if(players[ind + 1].isProtected){
-                    alert('This player is protected')
-                         }else{
-                  console.log(players[ind + 1])
-                  console.log(room)
+                    gameMessage.style.transform = 'translateY(0)'
+                    gameMessageMessage.innerHTML = 'This player is protected'
+                                         }
+                                         else if(players[ind + 1].isOutOfRound){
+                                            gameMessage.style.transform = 'translateY(0)'
+                                            gameMessageMessage.innerHTML = 'This player is out of round'
+                                        }
+                                         else{
                   socket.emit('king', room, players[ind + 1])
                          }
             })
             }) 
             }
             }else{
-            console.log('King is Clicked')
-            alert("Select Player To Trade Your Hands")
             enemyNodes.forEach((enemyNode, ind) => {
             enemyNode.addEventListener('click', function(){
             if(players[ind + 1].isProtected){
-                alert('This player is protected')
-                     }else{
-              console.log(players[ind + 1])
-              console.log(room)
+                gameMessage.style.transform = 'translateY(0)'
+                gameMessageMessage.innerHTML = 'This player is protected'
+                                 }
+                                 else if(players[ind + 1].isOutOfRound){
+                                    gameMessage.style.transform = 'translateY(0)'
+                                    gameMessageMessage.innerHTML = 'This player is out of round'
+                                }
+                                 else{
               socket.emit('king', room, players[ind + 1])
                      }
             })
@@ -238,11 +274,13 @@ if(crdOnhd.strength === 1){
                     }
          
                    }else{
-                       alert('You are out of round')
-                   }
+                    gameMessage.style.transform = 'translateY(0)'
+                    gameMessageMessage.innerHTML = 'You are out of round'
+                                   }
                         }else{
-                            alert('Wait for your turn.')
-                        }
+                            gameMessage.style.transform = 'translateY(0)'
+                            gameMessageMessage.innerHTML = 'It is not your turn'
+                                                }
 
         })
         myCard.style.backgroundImage = `url(../assets/${crdOnhd.card.toLowerCase()}.jpg)`
@@ -321,13 +359,11 @@ if(crdOnhd.strength === 1){
 //Socket responses about cards
 
 socket.on('drawnCardReady', lobby => {
-    console.log("Card is given")
     drawCards(lobby)
 })
 
 
 socket.on('baronReady',function(lobbyCondition) {
-    console.log("Baron")
     backdropAttack.style.display = 'flex'
     backdropAttacking.innerHTML = lobbyCondition.game.playerAttacking
     backdropAttacked.innerHTML = lobbyCondition.game.playerAttacked
@@ -339,13 +375,11 @@ socket.on('baronReady',function(lobbyCondition) {
 } )
 
 socket.on('drawAllReady', function(lobby){
-    console.log("Card is given to all")
     drawCards(lobby)
    }
    )
 
 socket.on('handmaidReady', lobby => {
-    console.log("Handmaid")
     backdropAttack.style.display = 'flex'
     backdropAttacking.innerHTML = lobby.game.playerAttacking
     backdropAttacked.innerHTML =  ''
@@ -356,8 +390,6 @@ socket.on('handmaidReady', lobby => {
     },1500) })
 
    socket.on('guardReady', (lobbyCondition, matched) => {
-    console.log('After guard')
-    console.log(matched)
     backdropAttack.style.display = 'flex'
     backdropAttacking.innerHTML = lobbyCondition.game.playerAttacking
     backdropAttacked.innerHTML = lobbyCondition.game.playerAttacked
@@ -369,7 +401,6 @@ socket.on('handmaidReady', lobby => {
    })
 
     socket.on('kingReady', lobby => {
-        console.log("After king: ")
         backdropAttack.style.display = 'flex'
         backdropAttacking.innerHTML = lobby.game.playerAttacking
         backdropAttacked.innerHTML = lobby.game.playerAttacked
@@ -381,7 +412,6 @@ socket.on('handmaidReady', lobby => {
         })
 
     socket.on('princeReady', function(lobby){
-        console.log('After prince: ')
         backdropAttack.style.display = 'flex'
         backdropAttacking.innerHTML = lobby.game.playerAttacking
         backdropAttacked.innerHTML = lobby.game.playerAttacked
@@ -394,7 +424,8 @@ socket.on('handmaidReady', lobby => {
 
 socket.on('priestReady', function(lobby, card){
     if(players[0].nickname === lobby.game.playerAttacking){
-        alert("The Player  has " + card.card)
+        gameMessage.style.transform = 'translateY(0)'
+       gameMessageMessage.innerHTML = `This player has ${card.card}`
     }
     backdropAttack.style.display = 'flex'
     backdropAttacking.innerHTML = lobby.game.playerAttacking
@@ -442,24 +473,28 @@ socket.on('discardedCardReady', lobby => {
 
 //Socket responses about whole game
 socket.on('gameOver', (lobby, winner) => {
-    console.log("After gameOver: ")
+    gameMessage.style.transform = ''
     backdropRoundOver.style.display = 'flex'
     backdropRoundOverTitle.innerHTML = 'Game Over'
-    backdropRoundOverWinner.innerHTML = `${winner} is winner.!!!`
+    backdropRoundOverWinner.innerHTML = `${winner.nickname} is winner.!!!`
 setTimeout(() => {
     window.history.back();
 },10000)
 })
 
 socket.on('throwError', error => {
-    alert(errorMap.get(error))
+    gameMessage.style.transform = 'translateY(0)'
+gameMessageMessage.innerHTML = errorMap.get(error)
+setTimeout(() => {
     window.history.back();
-})
+},1400)
+                    })
 
 socket.on('roundOver', (lobby,winner) => {
-    console.log('Round over')
+    gameMessage.style.transform = ''
+
     backdropRoundOver.style.display = 'flex'
-    backdropRoundOverWinner.innerHTML = `${winner} wins this round.`
+    backdropRoundOverWinner.innerHTML = `${winner.nickname} wins this round.`
 if(players[0].hisTurn){
     socket.emit('reset', room)
 
@@ -468,6 +503,7 @@ if(players[0].hisTurn){
 
 socket.emit('new-user', room, nickname, number)
 socket.on('send-first-message', ( newPlayer, lobby,  status, rooms ) => {
+    console.log(lobby)
     const index = lobby.players.findIndex(elem => elem.nickname === nickname);
   players = lobby.players.slice(index,lobby.players.length).concat(lobby.players.slice(0,index));
   cards = lobby.cards
@@ -565,7 +601,7 @@ if(game.isFull){
 
 
 socket.on('resetReady', lobby => {
-    console.log("After reset: ")
+    gameMessage.style.transform = ''
     const index = lobby.players.findIndex(elem => elem.nickname === nickname);
     players = lobby.players.slice(index,lobby.players.length).concat(lobby.players.slice(0,index));
     cards = lobby.cards
